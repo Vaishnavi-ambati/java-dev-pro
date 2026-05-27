@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>java.dev Study Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090e;--bg2:#0e0e16;--bg3:#13131d;--bg4:#181824;--border:#ffffff0d;--border2:#ffffff18;--text:#ddddf0;--text2:#8888a8;--text3:#4a4a68;--accent:#7b68ee;--accent2:#5a4fd4;--accent-glow:#7b68ee22;--accent-soft:#7b68ee15;--green:#2dd4a0;--green-bg:#2dd4a012;--amber:#f0a040;--amber-bg:#f0a04012;--red:#f06080;--red-bg:#f0608012;--blue:#60b8f0;--blue-bg:#60b8f012;--mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;--radius:10px;--radius-sm:6px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth}body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}code{font-family:var(--mono);font-size:.9em;background:var(--bg4);padding:1px 5px;border-radius:4px;color:var(--accent)}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(9,9,14,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.06em}.logo span{color:var(--text3);font-weight:400}
+.nav{display:flex;gap:2px}.nav-link{font-family:var(--mono);font-size:11.5px;font-weight:500;padding:5px 13px;border-radius:var(--radius-sm);cursor:pointer;color:var(--text2);border:1px solid transparent;transition:all .15s;letter-spacing:.04em}
+.nav-link:hover{color:var(--text);background:var(--bg4)}.nav-link.active{color:var(--accent);background:var(--accent-soft);border-color:var(--accent)25}
+.phase-tag{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:20px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)30;letter-spacing:.04em}
+.page{display:none;padding-top:54px;min-height:100vh}.page.active{display:block}
+.hero{padding:60px 32px 44px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;top:-80px;right:-100px;width:480px;height:480px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 65%);pointer-events:none}
+.hero-label{font-family:var(--mono);font-size:10.5px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+.hero h1{font-size:clamp(26px,3.5vw,44px);font-weight:800;line-height:1.1;margin-bottom:14px}.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{font-size:14px;color:var(--text2);max-width:520px;line-height:1.75}.hero-stats{display:flex;gap:28px;margin-top:28px;flex-wrap:wrap}
+.stat-n{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--text)}.stat-l{font-size:11px;color:var(--text3);margin-top:2px}
+.roadmap-wrap{padding:36px 32px}.sec-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px}
+.phases-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.phase-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.phase-card:hover{background:var(--bg3);border-color:var(--border2);transform:translateY(-1px)}
+.pnum{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:6px}.ptitle{font-size:13px;font-weight:700;margin-bottom:8px;line-height:1.3}
+.pmeta{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.badge{font-family:var(--mono);font-size:9.5px;font-weight:500;padding:2px 7px;border-radius:20px;letter-spacing:.04em}
+.bc{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)25}.bh{background:var(--green-bg);color:var(--green);border:1px solid var(--green)25}.bm{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber)25}
+.pwks{font-family:var(--mono);font-size:10px;color:var(--text3)}.card-glow{position:absolute;bottom:-40px;right:-40px;width:100px;height:100px;border-radius:50%;opacity:.05}
+.c .card-glow{background:var(--accent)}.h .card-glow{background:var(--green)}.m .card-glow{background:var(--amber)}
+.clayout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 54px)}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:20px 0;position:sticky;top:54px;height:calc(100vh - 54px);overflow-y:auto}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.sb-sec-title{font-family:var(--mono);font-size:9.5px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;padding:10px 18px 4px}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 18px;cursor:pointer;font-size:12.5px;color:var(--text2);border-left:2px solid transparent;transition:all .12s;line-height:1.3}
+.sb-item:hover{color:var(--text);background:var(--bg3)}.sb-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-soft)}
+.sb-dot{width:5px;height:5px;border-radius:50%;background:var(--border2);flex-shrink:0}.sb-item.active .sb-dot{background:var(--accent)}
+.carea{padding:36px 40px;overflow-y:auto;max-width:900px}
+.l-phase-tag{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+.l-title{font-size:26px;font-weight:800;margin-bottom:10px}.l-desc{font-size:13.5px;color:var(--text2);line-height:1.75;max-width:620px;margin-bottom:28px}
+h4.sh{font-size:14.5px;font-weight:700;margin:28px 0 10px;color:var(--text);display:flex;align-items:center;gap:8px}
+h4.sh::before{content:'';width:3px;height:16px;background:var(--accent);border-radius:2px;flex-shrink:0}
+p.body{font-size:13.5px;color:var(--text2);line-height:1.75;margin-bottom:10px}
+.code-block{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:12px 0}
+.code-top{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--bg4);border-bottom:1px solid var(--border)}
+.code-lang{font-family:var(--mono);font-size:10px;color:var(--accent);font-weight:600;letter-spacing:.06em}
+pre{font-family:var(--mono);font-size:12px;padding:18px;overflow-x:auto;line-height:1.75;color:#9999cc;tab-size:4}
+.kw{color:#c792ea}.cl{color:#82b4ff}.str{color:#b5e87a}.cm{color:#4a4a70;font-style:italic}.num{color:#f78c6c}.fn{color:#7ab4ff}.op{color:#89ddff}.an{color:#f0c060}
+.callout{border-radius:var(--radius-sm);padding:11px 14px;font-size:13px;margin:12px 0;line-height:1.65}
+.warn{background:var(--amber-bg);border:1px solid var(--amber)25;color:var(--amber)}.info{background:var(--blue-bg);border:1px solid var(--blue)25;color:var(--blue)}
+.success{background:var(--green-bg);border:1px solid var(--green)25;color:var(--green)}.danger{background:var(--red-bg);border:1px solid var(--red)25;color:var(--red)}
+.callout strong{font-weight:700}.res-grid{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.res-link{display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12.5px;color:var(--blue);transition:all .12s}
+.res-link:hover{background:var(--bg4);border-color:var(--blue)30}.res-link span{color:var(--text3);font-family:var(--mono);font-size:9.5px;margin-left:auto}
+.q-container{max-width:680px}.q-progress{display:flex;gap:5px;align-items:center;margin-bottom:20px}
+.qdot{width:22px;height:3px;border-radius:2px;background:var(--border2);transition:background .2s}.qdot.active{background:var(--accent)}.qdot.done{background:var(--green)}
+.q-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:14px}
+.q-n{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:7px;letter-spacing:.08em}
+.q-type{font-family:var(--mono);font-size:9.5px;color:var(--accent);margin-bottom:6px;letter-spacing:.1em;text-transform:uppercase}
+.q-text{font-size:14px;font-weight:600;line-height:1.6;margin-bottom:16px;color:var(--text)}
+.code-q{background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;font-family:var(--mono);font-size:11.5px;line-height:1.7;color:var(--text2);margin:10px 0;white-space:pre}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{display:flex;align-items:flex-start;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;cursor:pointer;font-size:13px;color:var(--text2);transition:all .12s;line-height:1.5}
+.opt:hover{background:var(--bg4);border-color:var(--border2);color:var(--text)}.opt.sel{background:var(--accent-soft);border-color:var(--accent)50;color:var(--accent)}
+.opt.ok{background:var(--green-bg);border-color:var(--green)40;color:var(--green)}.opt.no{background:var(--red-bg);border-color:var(--red)40;color:var(--red)}
+.opt-l{font-family:var(--mono);font-size:10px;font-weight:700;width:20px;height:20px;border-radius:4px;background:var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text3)}
+.opt.sel .opt-l{background:var(--accent);color:#fff}.opt.ok .opt-l{background:var(--green);color:#000}.opt.no .opt-l{background:var(--red);color:#fff}
+.explain{background:var(--bg3);border:1px solid var(--green)25;border-left:3px solid var(--green);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:11px 14px;font-size:13px;color:var(--text2);margin-top:10px;line-height:1.65;display:none}
+.explain.show{display:block}.explain strong{color:var(--green)}
+.btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--sans);font-size:12.5px;font-weight:600;padding:9px 18px;border-radius:var(--radius-sm);cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:all .14s}
+.btn:hover{background:var(--bg4);color:var(--text)}.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}.btn.pri:hover{background:var(--accent2)}
+.btn-row{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;align-items:center}
+.score-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px;text-align:center;display:none}.score-wrap.show{display:block}
+.score-big{font-family:var(--mono);font-size:52px;font-weight:700;color:var(--accent);line-height:1}.score-sub{font-size:13px;color:var(--text2);margin-top:7px}
+.step-list{display:flex;flex-direction:column;gap:9px;margin:16px 0}.step{display:flex;gap:12px;align-items:flex-start}
+.step-n{font-family:var(--mono);font-size:10px;font-weight:700;width:24px;height:24px;border-radius:5px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)25;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-t{font-size:13px;color:var(--text2);line-height:1.65;padding-top:3px}.step-t strong{color:var(--text);font-weight:600}
+@media(max-width:700px){.clayout{grid-template-columns:1fr}.sidebar{display:none}.carea{padding:20px 16px}.hero{padding:36px 16px 28px}.roadmap-wrap{padding:24px 16px}.topbar{padding:0 14px}.phases-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<nav class="topbar">
+  <div class="logo">java<span>.</span>dev <span>/ study</span></div>
+  <div class="nav">
+    <a class="nav-link" href="#lessons" onclick="route('lessons')">Lessons</a>
+    <a class="nav-link" href="#quizzes" onclick="route('quizzes')">Quizzes</a>
+    <a class="nav-link" href="#projects" onclick="route('projects')">Projects</a>
+  </div>
+  <div class="phase-tag">Phases 1-3 Complete</div>
+</nav>
+<div id="page-lessons" class="page">
+  <div class="hero">
+    <div class="hero-label">study/java-dev/lessons</div>
+    <h1>Pro Java Dev<br><em>Roadmap</em></h1>
+    <p>13 phases, ~30 weeks. Phases 1-3 fully loaded. Follow the order. Do not skip.</p>
+    <div class="hero-stats">
+      <div><div class="stat-n">13</div><div class="stat-l">Phases</div></div>
+      <div><div class="stat-n">~30w</div><div class="stat-l">Total</div></div>
+      <div><div class="stat-n">3</div><div class="stat-l">Complete</div></div>
+      <div><div class="stat-n">2x</div><div class="stat-l">Code vs Read</div></div>
+    </div>
+  </div>
+  <div class="roadmap-wrap">
+    <div class="sec-label">Click any phase to open its lessons</div>
+    <div class="phases-grid" id="phases-grid"></div>
+  </div>
+  <div class="clayout" id="lesson-layout" style="display:none">
+    <div class="sidebar" id="lesson-sidebar"></div>
+    <div class="carea" id="lesson-content"></div>
+  </div>
+</div>
+<div id="page-quizzes" class="page">
+  <div class="hero">
+    <div class="hero-label">study/java-dev/quizzes</div>
+    <h1>Knowledge<br><em>Checks</em></h1>
+    <p>Predict-the-output, MCQs, and concept traps. 8 quizzes covering all 3 phases.</p>
+  </div>
+  <div class="clayout">
+    <div class="sidebar" id="quiz-sidebar"></div>
+    <div class="carea" id="quiz-content"><div style="color:var(--text3);font-size:13px;padding-top:40px">Select a quiz from the sidebar</div></div>
+  </div>
+</div>
+<div id="page-projects" class="page">
+  <div class="hero">
+    <div class="hero-label">study/java-dev/projects</div>
+    <h1>Build <em>Real</em><br>Things</h1>
+    <p>5 projects from beginner to advanced. Close the tutorial. Open IntelliJ. Build from scratch.</p>
+  </div>
+  <div class="clayout">
+    <div class="sidebar" id="proj-sidebar"></div>
+    <div class="carea" id="proj-content"><div style="color:var(--text3);font-size:13px;padding-top:40px">Select a project from the sidebar</div></div>
+  </div>
+</div>
+<script>
+
+const PHASES=[
+  {id:1,title:'Java Core Mastery',weeks:'3-4 weeks',p:'CRITICAL',pc:'c'},
+  {id:2,title:'Java Advanced',weeks:'3-4 weeks',p:'CRITICAL',pc:'c'},
+  {id:3,title:'Spring Boot Deep Dive',weeks:'3-4 weeks',p:'CRITICAL',pc:'c'},
+  {id:4,title:'Databases & JPA',weeks:'2-3 weeks',p:'HIGH',pc:'h'},
+  {id:5,title:'Networking',weeks:'1-2 weeks',p:'HIGH',pc:'h'},
+  {id:6,title:'Docker',weeks:'2 weeks',p:'HIGH',pc:'h'},
+  {id:7,title:'Kubernetes + OpenShift',weeks:'3 weeks',p:'HIGH',pc:'h'},
+  {id:8,title:'API Design & Microservices',weeks:'2 weeks',p:'MEDIUM',pc:'m'},
+  {id:9,title:'Testing',weeks:'Ongoing',p:'CRITICAL',pc:'c'},
+  {id:10,title:'CI/CD & GitLab',weeks:'1-2 weeks',p:'HIGH',pc:'h'},
+  {id:11,title:'Observability & Logging',weeks:'1-2 weeks',p:'MEDIUM',pc:'m'},
+  {id:12,title:'Design Patterns & SOLID',weeks:'2 weeks',p:'HIGH',pc:'h'},
+  {id:13,title:'Enterprise Tools',weeks:'As needed',p:'MEDIUM',pc:'m'}
+];
+
+const L={
+'1.1':{phase:1,title:'Data Types & Memory',
+desc:'Primitive types, stack vs heap, String pool, autoboxing, pass-by-value. The fundamentals that explain all Java behaviour.',
+sections:[
+{h:'The 8 Primitive Types',
+body:'Java has exactly 8 primitive types. They live on the stack and hold actual values — not references. Sizes and defaults are standard interview knowledge.',
+code:`<span class="kw">byte</span>    b = <span class="num">25</span>;          <span class="cm">// 1 byte  | -128 to 127</span>
+<span class="kw">short</span>   s = <span class="num">2024</span>;        <span class="cm">// 2 bytes | -32,768 to 32,767</span>
+<span class="kw">int</span>     i = <span class="num">80_000</span>;      <span class="cm">// 4 bytes | most used numeric type</span>
+<span class="kw">long</span>    l = <span class="num">123456789L</span>;  <span class="cm">// 8 bytes | needs L suffix!</span>
+<span class="kw">float</span>   f = <span class="num">3.14f</span>;       <span class="cm">// 4 bytes | needs f suffix!</span>
+<span class="kw">double</span>  d = <span class="num">19.99</span>;       <span class="cm">// 8 bytes | default decimal type</span>
+<span class="kw">char</span>    c = <span class="str">'A'</span>;         <span class="cm">// 2 bytes | Unicode 0-65535</span>
+<span class="kw">boolean</span> t = <span class="kw">true</span>;        <span class="cm">// 1 bit</span>
+
+<span class="cm">// TRAP: integer division truncates — does NOT round</span>
+<span class="kw">int</span> result = <span class="num">7</span> / <span class="num">2</span>;
+<span class="cl">System</span>.out.println(result); <span class="cm">// 3, not 3.5!</span>
+
+<span class="cm">// TRAP: never use float/double for money</span>
+<span class="cl">System</span>.out.println(<span class="num">0.1</span> + <span class="num">0.2</span>); <span class="cm">// 0.30000000000000004</span>
+<span class="cl">BigDecimal</span> safe = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="str">"0.10"</span>).add(<span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="str">"0.20"</span>)); <span class="cm">// 0.30 exact</span>`,
+type:'warn',note:'<strong>Rule:</strong> Never use float or double for money. Always use BigDecimal with the String constructor.'},
+
+{h:'Stack vs Heap',
+body:'Stack stores primitives and references (the address). Each method call gets its own stack frame. Heap stores all objects — they live until garbage collected.',
+code:`<span class="cm">// PRIMITIVES: value lives ON the stack — copied by value</span>
+<span class="kw">int</span> x = <span class="num">10</span>;
+<span class="kw">int</span> y = x;     <span class="cm">// y is an independent copy</span>
+y = <span class="num">20</span>;
+<span class="cl">System</span>.out.println(x); <span class="cm">// 10 — unaffected</span>
+
+<span class="cm">// OBJECTS: reference on stack, object on heap</span>
+<span class="kw">int</span>[] a1 = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>};  <span class="cm">// stack: a1 -> heap[0x500]</span>
+<span class="kw">int</span>[] a2 = a1;           <span class="cm">// stack: a2 -> same heap[0x500]</span>
+a2[<span class="num">0</span>] = <span class="num">99</span>;
+<span class="cl">System</span>.out.println(a1[<span class="num">0</span>]); <span class="cm">// 99 — same object!</span>`,
+type:'info',note:'<strong>Key rule:</strong> primitives are copied by value. Object variables copy the reference (address), not the object.'},
+
+{h:'String Pool & Immutability',
+body:'JVM keeps a pool of string literals inside the heap. Same literal = same pooled object reused. new String() always creates a new heap object.',
+code:`<span class="cl">String</span> s1 = <span class="str">"hello"</span>;             <span class="cm">// pool: creates "hello"</span>
+<span class="cl">String</span> s2 = <span class="str">"hello"</span>;             <span class="cm">// pool: reuses same object</span>
+<span class="cl">String</span> s3 = <span class="kw">new</span> <span class="cl">String</span>(<span class="str">"hello"</span>); <span class="cm">// heap: new object</span>
+
+<span class="cl">System</span>.out.println(s1 == s2);       <span class="cm">// true  — same pool object</span>
+<span class="cl">System</span>.out.println(s1 == s3);       <span class="cm">// false — different objects</span>
+<span class="cl">System</span>.out.println(s1.equals(s3));  <span class="cm">// true  — same content</span>
+
+<span class="cm">// Immutability: "modifying" creates a new object</span>
+<span class="cl">String</span> s = <span class="str">"hello"</span>;
+s = s + <span class="str">" world"</span>; <span class="cm">// NEW object created; "hello" still in pool, unchanged</span>`,
+type:'success',note:'<strong>Rule:</strong> Prefer string literals over new String(). Never use new String() unless you specifically need a non-pooled object.'},
+
+{h:'== vs equals() — The #1 Production Bug',
+body:'== compares references (memory addresses). equals() compares content. Using == on Strings silently returns wrong results.',
+code:`<span class="cm">// THE BUG — silent, no exception thrown</span>
+<span class="cl">String</span> status = getFromDatabase(); <span class="cm">// returns new String("active")</span>
+<span class="kw">if</span> (status == <span class="str">"active"</span>) { <span class="cm">// ALWAYS false — different objects</span>
+    process();
+}
+
+<span class="cm">// CORRECT patterns</span>
+<span class="kw">if</span> (status.equals(<span class="str">"active"</span>)) { }            <span class="cm">// good</span>
+<span class="kw">if</span> (<span class="str">"active"</span>.equals(status)) { }            <span class="cm">// safer — no NPE if status is null</span>
+<span class="kw">if</span> (<span class="cl">Objects</span>.equals(status, <span class="str">"active"</span>)) { }  <span class="cm">// best — null-safe on both sides</span>
+
+<span class="cm">// Integer cache trap</span>
+<span class="cl">Integer</span> a = <span class="num">127</span>; <span class="cl">Integer</span> b = <span class="num">127</span>;
+<span class="cl">System</span>.out.println(a == b); <span class="cm">// true — cached range -128 to 127</span>
+<span class="cl">Integer</span> c = <span class="num">128</span>; <span class="cl">Integer</span> d = <span class="num">128</span>;
+<span class="cl">System</span>.out.println(c == d); <span class="cm">// false — outside cache, new objects</span>`,
+type:'danger',note:'<strong>Rule:</strong> Use == only for primitives and null checks. For all objects (String, Integer, etc.) use equals() or Objects.equals().'},
+
+{h:'Autoboxing Pitfalls',
+body:'Java auto-converts between primitives and wrapper classes. Convenient, but hides NPE traps and performance issues in tight loops.',
+code:`<span class="cm">// Autoboxing: int -> Integer (compiler inserts Integer.valueOf())</span>
+<span class="cl">Integer</span> boxed = <span class="num">42</span>;
+<span class="cm">// Unboxing: Integer -> int (compiler inserts intValue())</span>
+<span class="kw">int</span> prim = boxed;
+
+<span class="cm">// TRAP 1: unboxing null throws NullPointerException</span>
+<span class="cl">Integer</span> val = <span class="kw">null</span>;
+<span class="kw">int</span> x = val; <span class="cm">// NPE! val.intValue() on null reference</span>
+
+<span class="cm">// TRAP 2: Map.get() returns null if key not found</span>
+<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; scores = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+<span class="kw">int</span> s = scores.get(<span class="str">"alice"</span>); <span class="cm">// NPE if "alice" not present!</span>
+<span class="kw">int</span> safe = scores.getOrDefault(<span class="str">"alice"</span>, <span class="num">0</span>); <span class="cm">// correct</span>
+
+<span class="cm">// TRAP 3: autoboxing in tight loop — creates many objects</span>
+<span class="cl">Long</span> sum = <span class="num">0L</span>;
+<span class="kw">for</span> (<span class="kw">long</span> i = <span class="num">0</span>; i &lt; <span class="num">1_000_000</span>; i++) sum += i; <span class="cm">// 1M Long objects!</span>`,
+type:'warn',note:'<strong>Rule:</strong> Use primitives in performance-critical loops. Always check for null before unboxing. Use getOrDefault() on Maps.'}
+],
+resources:[
+{url:'https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html',label:'Oracle: Primitive Data Types'},
+{url:'https://www.baeldung.com/java-string-pool',label:'Baeldung: String Pool'},
+{url:'https://www.baeldung.com/java-stack-heap',label:'Baeldung: Stack vs Heap'}
+]},
+
+'1.2':{phase:1,title:'OOP Deep Dive',
+desc:'Encapsulation, composition over inheritance, polymorphism, abstract class vs interface, equals/hashCode contract, final and static.',
+sections:[
+{h:'Encapsulation — Beyond Getters/Setters',
+body:'Real encapsulation means controlling which state changes are valid, not just hiding fields behind accessors.',
+code:`<span class="cm">// BAD: raw setter, any value accepted, no validation</span>
+<span class="kw">class</span> <span class="cl">Account</span> {
+    <span class="kw">private double</span> balance;
+    <span class="kw">public void</span> <span class="fn">setBalance</span>(<span class="kw">double</span> b) { balance = b; } <span class="cm">// wrong</span>
+}
+
+<span class="cm">// GOOD: behaviour is exposed, invariants enforced</span>
+<span class="kw">public class</span> <span class="cl">Account</span> {
+    <span class="kw">private double</span> balance;
+    <span class="kw">public void</span> <span class="fn">deposit</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span> (amount &lt;= <span class="num">0</span>) <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="str">"Must be positive"</span>);
+        balance += amount;
+    }
+    <span class="kw">public void</span> <span class="fn">withdraw</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span> (amount &gt; balance) <span class="kw">throw new</span> <span class="cl">IllegalStateException</span>(<span class="str">"Insufficient funds"</span>);
+        balance -= amount;
+    }
+    <span class="kw">public double</span> <span class="fn">getBalance</span>() { <span class="kw">return</span> balance; }
+}`,
+type:'info',note:'Tell the object what to DO, not what to BE. Expose behaviour, not raw state.'},
+
+{h:'Composition Over Inheritance',
+body:'Use inheritance only for genuine is-a relationships. For has-a or can-do, compose instead. Inheritance creates tight coupling that is hard to change.',
+code:`<span class="cm">// BAD: Stack extends ArrayList? Stack is NOT-A ArrayList</span>
+<span class="kw">class</span> <span class="cl">BadStack</span> <span class="kw">extends</span> <span class="cl">ArrayList</span> { } <span class="cm">// exposes get(), subList(), 200+ wrong methods</span>
+
+<span class="cm">// GOOD: Stack has-a list</span>
+<span class="kw">public class</span> <span class="cl">Stack</span>&lt;T&gt; {
+    <span class="kw">private final</span> <span class="cl">List</span>&lt;T&gt; items = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+    <span class="kw">public void</span>    <span class="fn">push</span>(T t)  { items.add(t); }
+    <span class="kw">public</span> T       <span class="fn">pop</span>()     { <span class="kw">return</span> items.remove(items.size()-<span class="num">1</span>); }
+    <span class="kw">public</span> T       <span class="fn">peek</span>()    { <span class="kw">return</span> items.get(items.size()-<span class="num">1</span>); }
+    <span class="kw">public boolean</span> <span class="fn">isEmpty</span>() { <span class="kw">return</span> items.isEmpty(); }
+}
+
+<span class="cm">// Inheritance IS right when it is a genuine is-a</span>
+<span class="kw">abstract class</span> <span class="cl">Shape</span>     { <span class="kw">abstract double</span> <span class="fn">area</span>(); }
+<span class="kw">class</span> <span class="cl">Circle</span>    <span class="kw">extends</span> <span class="cl">Shape</span> { <span class="kw">double</span> <span class="fn">area</span>() { <span class="kw">return</span> Math.PI*r*r; } }
+<span class="kw">class</span> <span class="cl">Rectangle</span> <span class="kw">extends</span> <span class="cl">Shape</span> { <span class="kw">double</span> <span class="fn">area</span>() { <span class="kw">return</span> w*h; } }`,
+type:'warn',note:'When in doubt, compose. If the hierarchy confuses you after 2 levels, it is wrong.'},
+
+{h:'Runtime Polymorphism',
+body:'Runtime polymorphism: the JVM calls the overridden method based on the actual object type, not the reference type.',
+code:`<span class="kw">class</span> <span class="cl">Animal</span> { <span class="cl">String</span> <span class="fn">speak</span>() { <span class="kw">return</span> <span class="str">"..."</span>;  } }
+<span class="kw">class</span> <span class="cl">Dog</span> <span class="kw">extends</span> <span class="cl">Animal</span> {
+    <span class="an">@Override</span> <span class="cl">String</span> <span class="fn">speak</span>() { <span class="kw">return</span> <span class="str">"Woof"</span>; }
+}
+<span class="kw">class</span> <span class="cl">Cat</span> <span class="kw">extends</span> <span class="cl">Animal</span> {
+    <span class="an">@Override</span> <span class="cl">String</span> <span class="fn">speak</span>() { <span class="kw">return</span> <span class="str">"Meow"</span>; }
+}
+
+<span class="cl">Animal</span> a = <span class="kw">new</span> <span class="cl">Dog</span>();
+<span class="cl">System</span>.out.println(a.speak()); <span class="cm">// "Woof" — runtime type Dog decides</span>
+
+<span class="cl">List</span>&lt;<span class="cl">Animal</span>&gt; animals = <span class="cl">List</span>.of(<span class="kw">new</span> <span class="cl">Dog</span>(), <span class="kw">new</span> <span class="cl">Cat</span>(), <span class="kw">new</span> <span class="cl">Dog</span>());
+animals.forEach(x -> <span class="cl">System</span>.out.println(x.speak())); <span class="cm">// Woof Meow Woof</span>`,
+type:'info',note:'Always use @Override. It lets the compiler catch typos that would silently create a new method instead of overriding.'},
+
+{h:'equals() + hashCode() Contract',
+body:'Override both or neither. If you only override equals(), your objects disappear silently in HashMaps and HashSets.',
+code:`<span class="kw">public class</span> <span class="cl">User</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> email;
+    <span class="kw">public</span> <span class="fn">User</span>(<span class="cl">String</span> e) { <span class="kw">this</span>.email = e; }
+
+    <span class="an">@Override</span> <span class="kw">public boolean</span> <span class="fn">equals</span>(<span class="cl">Object</span> o) {
+        <span class="kw">if</span> (<span class="kw">this</span> == o) <span class="kw">return true</span>;
+        <span class="kw">if</span> (!(o <span class="kw">instanceof</span> <span class="cl">User</span>)) <span class="kw">return false</span>;
+        <span class="kw">return</span> <span class="cl">Objects</span>.equals(email, ((<span class="cl">User</span>)o).email);
+    }
+    <span class="an">@Override</span> <span class="kw">public int</span> <span class="fn">hashCode</span>() {
+        <span class="kw">return</span> <span class="cl">Objects</span>.hash(email);
+    }
+}
+<span class="cm">// Without hashCode override:</span>
+<span class="cl">Set</span>&lt;<span class="cl">User</span>&gt; set = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;();
+set.add(<span class="kw">new</span> <span class="cl">User</span>(<span class="str">"alice@x.com"</span>));
+set.contains(<span class="kw">new</span> <span class="cl">User</span>(<span class="str">"alice@x.com"</span>)); <span class="cm">// false! Wrong bucket.</span>`,
+type:'danger',note:'Contract: if a.equals(b) is true then a.hashCode() == b.hashCode() MUST hold. IDE generates both. Lombok @EqualsAndHashCode does it for you.'}
+],
+resources:[
+{url:'https://www.baeldung.com/java-equals-hashcode-contracts',label:'Baeldung: equals/hashCode contract'},
+{url:'https://www.baeldung.com/java-abstract-class',label:'Baeldung: Abstract class vs Interface'},
+{url:'https://www.baeldung.com/java-composition-aggregation-association',label:'Baeldung: Composition over Inheritance'}
+]},
+
+'1.3':{phase:1,title:'Collections Internals',
+desc:'ArrayList vs LinkedList time complexity, HashMap internals (buckets, load factor, rehashing), Map/Set variants, Comparable vs Comparator, fail-fast iterators.',
+sections:[
+{h:'ArrayList vs LinkedList',
+body:'Default to ArrayList. LinkedList wins only for frequent front insertions — and even then ArrayDeque is usually faster.',
+code:`<span class="cm">// ArrayList — backed by a dynamic array</span>
+<span class="cm">// get(i): O(1) | add(end): O(1) amortised | add(middle): O(n)</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; arr = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+
+<span class="cm">// LinkedList — doubly-linked list</span>
+<span class="cm">// get(i): O(n) | add(front/end): O(1) | add(middle): O(n)</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; ll = <span class="kw">new</span> <span class="cl">LinkedList</span>&lt;&gt;();
+
+<span class="cm">// ArrayDeque beats LinkedList as Queue/Stack — no node allocation</span>
+<span class="cl">Deque</span>&lt;<span class="cl">String</span>&gt; dq = <span class="kw">new</span> <span class="cl">ArrayDeque</span>&lt;&gt;();
+dq.addFirst(<span class="str">"front"</span>); dq.addLast(<span class="str">"back"</span>);
+dq.pollFirst(); <span class="cm">// O(1) remove and return</span>`,
+type:'info',note:'In 95% of cases use ArrayList. Use LinkedList only when using it as a Deque, and even then prefer ArrayDeque.'},
+
+{h:'HashMap Internals',
+body:'HashMap uses an array of buckets. hashCode() determines the bucket. equals() resolves collisions. Java 8+ converts long chains to red-black trees.',
+code:`<span class="cm">// How put(key, value) works:</span>
+<span class="cm">// 1. hash = key.hashCode() (spread with bit mixing)</span>
+<span class="cm">// 2. bucket = hash % capacity  (default capacity 16)</span>
+<span class="cm">// 3. bucket empty: insert. Not empty: walk chain, use equals() to find match</span>
+<span class="cm">// 4. size > capacity * 0.75: DOUBLE capacity and rehash everything (O(n))</span>
+<span class="cm">// Java 8: chain > 8 entries -> red-black tree (O(log n))</span>
+
+<span class="cm">// Pick the right Map variant:</span>
+<span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();           <span class="cm">// O(1)      — no ordering</span>
+<span class="kw">new</span> <span class="cl">LinkedHashMap</span>&lt;&gt;();     <span class="cm">// O(1)      — insertion order preserved</span>
+<span class="kw">new</span> <span class="cl">TreeMap</span>&lt;&gt;();           <span class="cm">// O(log n)  — sorted by key (natural order)</span>
+<span class="kw">new</span> <span class="cl">ConcurrentHashMap</span>&lt;&gt;(); <span class="cm">// O(1)      — thread-safe, no null keys/values</span>`,
+type:'warn',note:'Keys MUST implement hashCode() and equals() correctly. Wrong hashCode = objects land in wrong bucket and are never found.'},
+
+{h:'Comparable vs Comparator',
+body:'Comparable = natural order baked into the class. Comparator = external ordering strategy — more flexible, lets you sort the same class multiple ways.',
+code:`<span class="cm">// Comparable: class defines its own natural order</span>
+<span class="kw">class</span> <span class="cl">Employee</span> <span class="kw">implements</span> <span class="cl">Comparable</span>&lt;<span class="cl">Employee</span>&gt; {
+    <span class="cl">String</span> name; <span class="kw">int</span> salary;
+    <span class="an">@Override</span> <span class="kw">public int</span> <span class="fn">compareTo</span>(<span class="cl">Employee</span> o) {
+        <span class="kw">return</span> <span class="cl">Integer</span>.compare(<span class="kw">this</span>.salary, o.salary);
+    }
+}
+<span class="cl">Collections</span>.sort(employees); <span class="cm">// uses compareTo()</span>
+
+<span class="cm">// Comparator: external ordering — define as many as you need</span>
+<span class="cl">Comparator</span>&lt;<span class="cl">Employee</span>&gt; byName       = <span class="cl">Comparator</span>.comparing(<span class="cl">Employee</span>::getName);
+<span class="cl">Comparator</span>&lt;<span class="cl">Employee</span>&gt; bySalaryDesc = <span class="cl">Comparator</span>.comparingInt(<span class="cl">Employee</span>::getSalary).reversed();
+employees.sort(byName.thenComparing(bySalaryDesc));`,
+type:'info',note:'Implement Comparable for natural order. Use Comparator when you need multiple sort strategies or cannot modify the class.'},
+
+{h:'Fail-Fast vs Fail-Safe Iterators',
+body:'Fail-fast iterators throw ConcurrentModificationException if the collection is modified during iteration. Use removeIf() or iterator.remove() to safely delete during iteration.',
+code:`<span class="cm">// FAIL-FAST: ArrayList, HashMap — throws on structural modification</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; list = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;(<span class="cl">Arrays</span>.asList(<span class="str">"a"</span>,<span class="str">"b"</span>,<span class="str">"c"</span>));
+<span class="kw">for</span> (<span class="cl">String</span> s : list) {
+    <span class="kw">if</span> (s.equals(<span class="str">"b"</span>)) list.remove(s); <span class="cm">// ConcurrentModificationException!</span>
+}
+
+<span class="cm">// CORRECT: removeIf() — Java 8+ safe removal</span>
+list.removeIf(s -> s.equals(<span class="str">"b"</span>));
+
+<span class="cm">// FAIL-SAFE: ConcurrentHashMap — iterates on a snapshot copy</span>
+<span class="cl">Map</span>&lt;<span class="cl">String</span>,<span class="cl">Integer</span>&gt; chm = <span class="kw">new</span> <span class="cl">ConcurrentHashMap</span>&lt;&gt;();
+<span class="kw">for</span> (<span class="cl">String</span> k : chm.keySet()) { chm.remove(k); } <span class="cm">// safe, no exception</span>`,
+type:'warn',note:'Never modify a collection while iterating it with for-each. Use removeIf(), iterator.remove(), or stream to a new list.'}
+],
+resources:[
+{url:'https://www.baeldung.com/java-hashmap',label:'Baeldung: HashMap internals'},
+{url:'https://www.baeldung.com/java-comparator-comparable',label:'Baeldung: Comparable vs Comparator'},
+{url:'https://www.baeldung.com/java-fail-safe-vs-fail-fast-iterator',label:'Baeldung: Fail-fast vs Fail-safe'}
+]},
+
+'1.4':{phase:1,title:'Exception Handling',
+desc:'Exception hierarchy, checked vs unchecked design, try-with-resources, multi-catch, custom exceptions, and the finally trap.',
+sections:[
+{h:'Exception Hierarchy',
+body:'Know this tree cold. It determines whether the compiler forces you to handle an exception or not.',
+code:`<span class="cm">// Throwable</span>
+<span class="cm">//  +- Error              <- JVM-level. Do NOT catch these.</span>
+<span class="cm">//  |    +- OutOfMemoryError</span>
+<span class="cm">//  |    +- StackOverflowError</span>
+<span class="cm">//  +- Exception</span>
+<span class="cm">//       +- IOException       <- CHECKED: compiler forces handling</span>
+<span class="cm">//       +- SQLException      <- CHECKED</span>
+<span class="cm">//       +- RuntimeException  <- UNCHECKED: programmer errors</span>
+<span class="cm">//            +- NullPointerException</span>
+<span class="cm">//            +- IllegalArgumentException</span>
+<span class="cm">//            +- IllegalStateException</span>
+<span class="cm">//            +- IndexOutOfBoundsException</span>
+
+<span class="cm">// Checked: must declare or catch</span>
+<span class="kw">void</span> <span class="fn">read</span>() <span class="kw">throws</span> <span class="cl">IOException</span> { ... }
+
+<span class="cm">// Unchecked: you decide whether to catch</span>
+<span class="kw">void</span> <span class="fn">validate</span>(<span class="cl">String</span> s) {
+    <span class="kw">if</span> (s == <span class="kw">null</span>) <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="str">"s must not be null"</span>);
+}`,
+type:'info',note:'Modern Java: prefer unchecked exceptions. Reserve checked for truly recoverable conditions the caller is expected to handle.'},
+
+{h:'try-with-resources',
+body:'Any AutoCloseable is automatically closed at the end of the try block — even if an exception is thrown. Use this for ALL I/O.',
+code:`<span class="cm">// OLD way: messy, easy to forget close()</span>
+<span class="cl">BufferedReader</span> br = <span class="kw">null</span>;
+<span class="kw">try</span> { br = <span class="kw">new</span> <span class="cl">BufferedReader</span>(<span class="kw">new</span> <span class="cl">FileReader</span>(<span class="str">"f.txt"</span>)); }
+<span class="kw">finally</span> { <span class="kw">if</span> (br != <span class="kw">null</span>) br.close(); }
+
+<span class="cm">// NEW way: automatic, correct, clean</span>
+<span class="kw">try</span> (<span class="cl">BufferedReader</span> br = <span class="kw">new</span> <span class="cl">BufferedReader</span>(<span class="kw">new</span> <span class="cl">FileReader</span>(<span class="str">"f.txt"</span>))) {
+    <span class="cl">String</span> line = br.readLine();
+} <span class="cm">// br.close() called automatically here, always</span>
+
+<span class="cm">// Multiple resources: closed in REVERSE order</span>
+<span class="kw">try</span> (<span class="kw">var</span> conn = ds.getConnection();
+     <span class="kw">var</span> stmt = conn.prepareStatement(sql);
+     <span class="kw">var</span> rs   = stmt.executeQuery()) {
+    <span class="cm">// rs closed first, then stmt, then conn</span>
+}`,
+type:'success',note:'Always use try-with-resources for any Closeable: file, stream, connection, reader. No exceptions to this rule.'},
+
+{h:'Custom Exceptions & Finally Trap',
+body:'Create domain-specific exceptions to add meaning to errors. Never return from a finally block — it silently swallows exceptions.',
+code:`<span class="cm">// Custom unchecked exception (modern preference)</span>
+<span class="kw">public class</span> <span class="cl">UserNotFoundException</span> <span class="kw">extends</span> <span class="cl">RuntimeException</span> {
+    <span class="kw">public</span> <span class="fn">UserNotFoundException</span>(<span class="cl">String</span> id) {
+        <span class="kw">super</span>(<span class="str">"User not found: "</span> + id);
+    }
+    <span class="cm">// Exception chaining: preserve original cause</span>
+    <span class="kw">public</span> <span class="fn">UserNotFoundException</span>(<span class="cl">String</span> id, <span class="cl">Throwable</span> cause) {
+        <span class="kw">super</span>(<span class="str">"User not found: "</span> + id, cause);
+    }
+}
+
+<span class="cm">// Multi-catch (Java 7+)</span>
+<span class="kw">try</span> { riskyOp(); }
+<span class="kw">catch</span> (<span class="cl">UserNotFoundException</span> | <span class="cl">AccountNotFoundException</span> e) {
+    log.warn(<span class="str">"Not found: {}"</span>, e.getMessage());
+}
+
+<span class="cm">// TRAP: return in finally silently swallows exception</span>
+<span class="kw">try</span> { <span class="kw">throw new</span> <span class="cl">RuntimeException</span>(<span class="str">"oops"</span>); }
+<span class="kw">finally</span> { <span class="kw">return</span>; } <span class="cm">// exception swallowed! Never do this.</span>`,
+type:'danger',note:'Never return from a finally block. It silently swallows any exception thrown in the try block.'}
+],
+resources:[
+{url:'https://www.baeldung.com/java-exceptions',label:'Baeldung: Exception Handling'},
+{url:'https://www.baeldung.com/java-try-with-resources',label:'Baeldung: try-with-resources'},
+{url:'https://www.baeldung.com/java-checked-unchecked-exceptions',label:'Baeldung: Checked vs Unchecked'}
+]},
+
+'2.1':{phase:2,title:'Java 8 Features',
+desc:'Lambdas, functional interfaces, Streams API, Optional, method references, new Date/Time API. Used everywhere in production.',
+sections:[
+{h:'Lambdas and Functional Interfaces',
+body:'A lambda is an anonymous function. A functional interface has exactly one abstract method. The 4 core built-in interfaces cover 90% of use cases.',
+code:`<span class="cm">// Without lambda: verbose anonymous class</span>
+<span class="cl">Runnable</span> r1 = <span class="kw">new</span> <span class="cl">Runnable</span>() { <span class="kw">public void</span> <span class="fn">run</span>() { <span class="cl">System</span>.out.println(<span class="str">"run"</span>); } };
+<span class="cm">// With lambda: clean</span>
+<span class="cl">Runnable</span> r2 = () -&gt; <span class="cl">System</span>.out.println(<span class="str">"run"</span>);
+
+<span class="cm">// The 4 core functional interfaces</span>
+<span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt;        isEmpty = s -&gt; s.isEmpty();             <span class="cm">// T -&gt; boolean</span>
+<span class="cl">Function</span>&lt;<span class="cl">String</span>,<span class="cl">Integer</span>&gt; len     = s -&gt; s.length();              <span class="cm">// T -&gt; R</span>
+<span class="cl">Consumer</span>&lt;<span class="cl">String</span>&gt;         print   = s -&gt; <span class="cl">System</span>.out.println(s);  <span class="cm">// T -&gt; void</span>
+<span class="cl">Supplier</span>&lt;<span class="cl">String</span>&gt;         hello   = () -&gt; <span class="str">"hello"</span>;                <span class="cm">// () -&gt; T</span>
+
+<span class="cm">// Method references: shorthand for lambdas</span>
+<span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt;        blank  = <span class="cl">String</span>::isBlank;      <span class="cm">// instance method ref</span>
+<span class="cl">Function</span>&lt;<span class="cl">String</span>,<span class="cl">Integer</span>&gt; parse  = <span class="cl">Integer</span>::parseInt;     <span class="cm">// static method ref</span>
+<span class="cl">Supplier</span>&lt;<span class="cl">List</span>&gt;           newL   = <span class="cl">ArrayList</span>::<span class="kw">new</span>;       <span class="cm">// constructor ref</span>`,
+type:'info',note:'Variables used inside lambdas must be effectively final. The compiler enforces this.'},
+
+{h:'Streams API',
+body:'A stream supports aggregate operations on sequences. Intermediate ops are lazy. Terminal ops trigger execution.',
+code:`<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.of(<span class="str">"Alice"</span>,<span class="str">"Bob"</span>,<span class="str">"Anna"</span>,<span class="str">"Charlie"</span>);
+
+<span class="cm">// Intermediate (lazy): filter map flatMap distinct sorted limit skip</span>
+<span class="cm">// Terminal (eager):    collect forEach count reduce findFirst anyMatch</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; result = names.stream()
+    .filter(n -&gt; n.startsWith(<span class="str">"A"</span>))  <span class="cm">// [Alice, Anna]</span>
+    .sorted()                           <span class="cm">// [Alice, Anna]</span>
+    .map(<span class="cl">String</span>::toUpperCase)          <span class="cm">// [ALICE, ANNA]</span>
+    .collect(<span class="cl">Collectors</span>.toList());
+
+<span class="cm">// groupingBy — key operation for reporting</span>
+<span class="cl">Map</span>&lt;<span class="cl">Integer</span>,<span class="cl">List</span>&lt;<span class="cl">String</span>&gt;&gt; byLen =
+    names.stream().collect(<span class="cl">Collectors</span>.groupingBy(<span class="cl">String</span>::length));
+
+<span class="cm">// flatMap — flatten nested collections</span>
+<span class="cl">List</span>&lt;<span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt;&gt; nested = <span class="cl">List</span>.of(<span class="cl">List</span>.of(<span class="num">1</span>,<span class="num">2</span>), <span class="cl">List</span>.of(<span class="num">3</span>,<span class="num">4</span>));
+<span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt; flat = nested.stream()
+    .flatMap(<span class="cl">Collection</span>::stream).collect(<span class="cl">Collectors</span>.toList()); <span class="cm">// [1,2,3,4]</span>`,
+type:'info',note:'Streams cannot be reused. Once a terminal operation runs the stream is consumed. Create a new stream for each pipeline.'},
+
+{h:'Optional',
+body:'Optional is a container that may or may not hold a value. It forces callers to handle absence explicitly, eliminating silent NPEs.',
+code:`<span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; present = <span class="cl">Optional</span>.of(<span class="str">"hello"</span>);
+<span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; empty   = <span class="cl">Optional</span>.empty();
+<span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; maybe  = <span class="cl">Optional</span>.ofNullable(couldBeNull);
+
+<span class="cm">// orElse vs orElseGet — important performance difference!</span>
+String v1 = maybe.orElse(<span class="str">"default"</span>);         <span class="cm">// "default" ALWAYS evaluated</span>
+String v2 = maybe.orElseGet(() -&gt; compute()); <span class="cm">// lambda only called if empty</span>
+String v3 = maybe.orElseThrow(<span class="cl">NoSuchElementException</span>::<span class="kw">new</span>);
+
+<span class="cm">// Chaining</span>
+<span class="kw">int</span> len = maybe.map(<span class="cl">String</span>::length).orElse(<span class="num">0</span>);
+<span class="cl">User</span> u  = userRepo.findByEmail(email)
+                   .orElseThrow(() -&gt; <span class="kw">new</span> <span class="cl">UserNotFoundException</span>(email));`,
+type:'success',note:'Use Optional as a return type only. Never as a field or method parameter. Never call get() without isPresent() first.'},
+
+{h:'New Date/Time API',
+body:'java.util.Date is mutable, not thread-safe, poorly designed. java.time (Java 8) is immutable and thread-safe.',
+code:`<span class="cm">// java.time classes</span>
+<span class="cl">LocalDate</span>     date = <span class="cl">LocalDate</span>.now();     <span class="cm">// date only</span>
+<span class="cl">LocalTime</span>     time = <span class="cl">LocalTime</span>.now();     <span class="cm">// time only</span>
+<span class="cl">LocalDateTime</span> dt   = <span class="cl">LocalDateTime</span>.now(); <span class="cm">// date + time, no timezone</span>
+<span class="cl">ZonedDateTime</span> zdt  = <span class="cl">ZonedDateTime</span>.now(); <span class="cm">// date + time + timezone</span>
+<span class="cl">Instant</span>       now  = <span class="cl">Instant</span>.now();       <span class="cm">// machine timestamp</span>
+
+<span class="cl">LocalDate</span> bday  = <span class="cl">LocalDate</span>.of(<span class="num">1990</span>, <span class="cl">Month</span>.JUNE, <span class="num">15</span>);
+<span class="cl">LocalDate</span> next7 = <span class="cl">LocalDate</span>.now().plusDays(<span class="num">7</span>);
+<span class="cl">Period</span>    diff  = <span class="cl">Period</span>.between(bday, <span class="cl">LocalDate</span>.now());
+
+String fmt = <span class="cl">LocalDate</span>.now()
+    .format(<span class="cl">DateTimeFormatter</span>.ofPattern(<span class="str">"dd/MM/yyyy"</span>));`,
+type:'info',note:'Never use java.util.Date in new code. Store timestamps as Instant. Display as ZonedDateTime. Use LocalDate for date-only values.'}
+],
+resources:[
+{url:'https://www.baeldung.com/java-8-streams',label:'Baeldung: Java 8 Streams'},
+{url:'https://www.baeldung.com/java-optional',label:'Baeldung: Optional'},
+{url:'https://www.baeldung.com/java-8-date-time-intro',label:'Baeldung: Date/Time API'}
+]},
+
+'2.2':{phase:2,title:'Generics',
+desc:'Generic classes and methods, bounded type parameters, wildcards, PECS rule, type erasure.',
+sections:[
+{h:'Generic Classes and Methods',
+body:'Generics allow type-safe code that works with multiple types. Type checks happen at compile time. At runtime all generics are erased.',
+code:`<span class="kw">public class</span> <span class="cl">Pair</span>&lt;A, B&gt; {
+    <span class="kw">private final</span> A first; <span class="kw">private final</span> B second;
+    <span class="kw">public</span> <span class="fn">Pair</span>(A a, B b) { first=a; second=b; }
+    <span class="kw">public</span> A <span class="fn">getFirst</span>()  { <span class="kw">return</span> first; }
+    <span class="kw">public</span> B <span class="fn">getSecond</span>() { <span class="kw">return</span> second; }
+}
+<span class="cl">Pair</span>&lt;<span class="cl">String</span>,<span class="cl">Integer</span>&gt; p = <span class="kw">new</span> <span class="cl">Pair</span>&lt;&gt;(<span class="str">"age"</span>, <span class="num">30</span>);
+
+<span class="cm">// Generic method: type inferred from arguments</span>
+<span class="kw">public static</span> &lt;T <span class="kw">extends</span> <span class="cl">Comparable</span>&lt;T&gt;&gt; T <span class="fn">max</span>(T a, T b) {
+    <span class="kw">return</span> a.compareTo(b) &gt;= <span class="num">0</span> ? a : b;
+}
+<span class="cl">Integer</span> n = <span class="fn">max</span>(<span class="num">10</span>, <span class="num">20</span>); <span class="cm">// T inferred as Integer</span>
+
+<span class="cm">// Type erasure: both are just List at runtime</span>
+<span class="cm">// List&lt;String&gt; == List&lt;Integer&gt; at runtime</span>
+<span class="cm">// That is why new T() and instanceof List&lt;String&gt; are compile errors</span>`,
+type:'info',note:'Generics exist at compile time only. The JVM has no knowledge of generic type parameters at runtime.'},
+
+{h:'Wildcards and PECS',
+body:'Wildcards allow methods to accept multiple parameterized types. PECS = Producer Extends, Consumer Super.',
+code:`<span class="cm">// Upper bounded: ? extends T — READ from it (producer)</span>
+<span class="kw">public double</span> <span class="fn">sum</span>(<span class="cl">List</span>&lt;? <span class="kw">extends</span> <span class="cl">Number</span>&gt; list) {
+    <span class="kw">return</span> list.stream().mapToDouble(<span class="cl">Number</span>::doubleValue).sum();
+    <span class="cm">// accepts List&lt;Integer&gt;, List&lt;Double&gt;, List&lt;Long&gt;...</span>
+}
+
+<span class="cm">// Lower bounded: ? super T — WRITE to it (consumer)</span>
+<span class="kw">public void</span> <span class="fn">addNumbers</span>(<span class="cl">List</span>&lt;? <span class="kw">super</span> <span class="cl">Integer</span>&gt; list) {
+    list.add(<span class="num">1</span>); list.add(<span class="num">2</span>);
+    <span class="cm">// accepts List&lt;Integer&gt;, List&lt;Number&gt;, List&lt;Object&gt;</span>
+}
+
+<span class="cm">// PECS mnemonic:
+//   Producer (you READ FROM) -> extends
+//   Consumer (you WRITE TO)  -> super</span>`,
+type:'warn',note:'Memorise PECS: Producer Extends, Consumer Super. Standard senior-level interview question.'}
+],
+resources:[
+{url:'https://www.baeldung.com/java-generics',label:'Baeldung: Java Generics'},
+{url:'https://www.baeldung.com/java-generics-pecs',label:'Baeldung: PECS explained'}
+]},
+
+'2.3':{phase:2,title:'Multithreading and Concurrency',
+desc:'Thread lifecycle, ExecutorService, synchronized vs volatile, CompletableFuture, AtomicInteger, and concurrency pitfalls.',
+sections:[
+{h:'Thread Lifecycle and ExecutorService',
+body:'Never create threads manually in production. Use ExecutorService to manage a thread pool.',
+code:`<span class="cl">Runnable</span> task = () -&gt; <span class="cl">System</span>.out.println(<span class="str">"running"</span>);
+<span class="cl">Callable</span>&lt;<span class="cl">Integer</span>&gt; calc = () -&gt; <span class="num">42</span>;
+
+<span class="cm">// ExecutorService: production standard</span>
+<span class="cl">ExecutorService</span> pool = <span class="cl">Executors</span>.newFixedThreadPool(<span class="num">4</span>);
+pool.execute(task);                           <span class="cm">// fire and forget</span>
+<span class="cl">Future</span>&lt;<span class="cl">Integer</span>&gt; f = pool.submit(calc);        <span class="cm">// get result later</span>
+<span class="kw">int</span> result = f.get();                         <span class="cm">// blocks until done</span>
+pool.shutdown();                              <span class="cm">// always shut down!</span>
+
+<span class="cm">// Thread states:
+// NEW -&gt; RUNNABLE -&gt; BLOCKED / WAITING / TIMED_WAITING -&gt; TERMINATED</span>`,
+type:'info',note:'Never use new Thread() in production. Always use ExecutorService — it manages pooling, handles exceptions, and is reusable.'},
+
+{h:'synchronized, volatile, AtomicInteger',
+body:'synchronized = mutual exclusion. volatile = visibility guarantee. AtomicInteger = thread-safe single-variable operations without locking.',
+code:`<span class="cm">// synchronized: only one thread executes this block at a time</span>
+<span class="kw">public synchronized void</span> <span class="fn">increment</span>() { counter++; }
+
+<span class="cm">// volatile: changes immediately visible to all threads</span>
+<span class="kw">private volatile boolean</span> running = <span class="kw">true</span>;
+<span class="kw">void</span> <span class="fn">stop</span>() { running = <span class="kw">false</span>; }
+<span class="kw">void</span> <span class="fn">run</span>()  { <span class="kw">while</span> (running) { doWork(); } }
+
+<span class="cm">// AtomicInteger: thread-safe, lock-free operations</span>
+<span class="cl">AtomicInteger</span> count = <span class="kw">new</span> <span class="cl">AtomicInteger</span>(<span class="num">0</span>);
+count.incrementAndGet();              <span class="cm">// atomic increment</span>
+count.compareAndSet(<span class="num">5</span>, <span class="num">10</span>);           <span class="cm">// CAS: set to 10 only if currently 5</span>
+
+<span class="cm">// counter++ is NOT atomic: READ, ADD, WRITE = 3 ops
+// Two threads reading same value before writing = lost update
+// Always use AtomicInteger or synchronized for shared counters</span>`,
+type:'warn',note:'counter++ is three operations, not one. Two threads can read the same value before either writes back. Use AtomicInteger or synchronized.'},
+
+{h:'CompletableFuture',
+body:'The modern async API. Chain operations, combine futures, and handle errors without blocking.',
+code:`<span class="cm">// Chain async operations</span>
+<span class="cl">CompletableFuture</span>.supplyAsync(() -&gt; fetchUser(<span class="num">1</span>))
+    .thenApply(user  -&gt; enrichUser(user))
+    .thenAccept(user -&gt; System.out.println(user))
+    .exceptionally(e -&gt; { log(e); <span class="kw">return null</span>; });
+
+<span class="cm">// Combine two independent futures</span>
+<span class="cl">CompletableFuture</span>&lt;<span class="cl">User</span>&gt;    uf = <span class="cl">CompletableFuture</span>.supplyAsync(() -&gt; getUser());
+<span class="cl">CompletableFuture</span>&lt;<span class="cl">Account</span>&gt; af = <span class="cl">CompletableFuture</span>.supplyAsync(() -&gt; getAccount());
+<span class="cl">Summary</span> s = uf.thenCombine(af, <span class="cl">Summary</span>::<span class="kw">new</span>).join();
+
+<span class="cm">// Wait for ALL to finish</span>
+<span class="cl">CompletableFuture</span>.allOf(uf, af).join();`,
+type:'info',note:'Use supplyAsync with a custom Executor in production. The default ForkJoinPool is shared and can starve other work.'}
+],
+resources:[
+{url:'https://www.baeldung.com/java-completablefuture',label:'Baeldung: CompletableFuture'},
+{url:'https://www.baeldung.com/java-executor-service-tutorial',label:'Baeldung: ExecutorService'},
+{url:'https://www.baeldung.com/java-volatile',label:'Baeldung: volatile keyword'}
+]},
+
+'2.4':{phase:2,title:'Java 11-21 and JVM Internals',
+desc:'Modern Java features (Records, var, virtual threads, pattern matching) plus JVM memory areas and GC awareness.',
+sections:[
+{h:'Modern Java Features 11 to 21',
+body:'Records, var, virtual threads, and pattern matching have real architectural value beyond syntax improvements.',
+code:`<span class="cm">// var: local type inference (Java 10+)</span>
+<span class="kw">var</span> list = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;<span class="cl">String</span>&gt;();
+
+<span class="cm">// Records: immutable data classes (Java 16+) — perfect for DTOs</span>
+<span class="kw">record</span> <span class="cl">UserDTO</span>(<span class="cl">String</span> name, <span class="cl">String</span> email, <span class="kw">int</span> age) {}
+<span class="cm">// Compiler generates: constructor, accessors, equals, hashCode, toString</span>
+<span class="cl">UserDTO</span> u = <span class="kw">new</span> <span class="cl">UserDTO</span>(<span class="str">"Alice"</span>, <span class="str">"a@x.com"</span>, <span class="num">30</span>);
+u.name(); <span class="cm">// accessor — no get prefix</span>
+
+<span class="cm">// Pattern matching instanceof (Java 16+)</span>
+<span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="cl">String</span> s) {
+    System.out.println(s.length()); <span class="cm">// already cast</span>
+}
+
+<span class="cm">// Virtual Threads (Java 21) — lightweight, millions possible</span>
+<span class="cl">Thread</span>.ofVirtual().start(() -&gt; handleRequest());
+<span class="cl">ExecutorService</span> vPool = <span class="cl">Executors</span>.newVirtualThreadPerTaskExecutor();`,
+type:'info',note:'Use Records for DTOs instead of Lombok @Data for immutable data. Virtual Threads make thread-per-request viable for I/O-bound services without reactive programming.'},
+
+{h:'JVM Memory and GC Awareness',
+body:'Understand JVM memory to diagnose OutOfMemoryError, tune GC, and understand slowdowns under load.',
+code:`<span class="cm">// JVM Memory Areas:
+// Heap      -&gt; all objects and arrays
+//   Young Gen (Eden + S0 + S1) -&gt; new objects, minor GC fast
+//   Old Gen                    -&gt; surviving objects, major GC slow
+// Stack     -&gt; method frames, local vars (one per thread)
+// Metaspace -&gt; class metadata (replaced PermGen in Java 8)
+
+// GC Collectors:
+// Serial   -&gt; single thread, small apps
+// Parallel -&gt; multi-thread, throughput (batch jobs)
+// G1 GC    -&gt; default Java 9+, balanced
+// ZGC      -&gt; sub-millisecond pauses (Java 15+, large heaps)
+
+// JVM flags:
+// -Xms512m   -&gt; initial heap (set = Xmx in containers!)
+// -Xmx2g     -&gt; max heap
+// -XX:+UseG1GC
+// -XX:+HeapDumpOnOutOfMemoryError</span>`,
+type:'warn',note:'In Docker/K8s: always set -Xms equal to -Xmx. Otherwise the JVM may request more memory than the container limit and get OOM-killed.'}
+],
+resources:[
+{url:'https://www.baeldung.com/java-record-keyword',label:'Baeldung: Java Records'},
+{url:'https://www.baeldung.com/java-21-virtual-threads',label:'Baeldung: Virtual Threads'},
+{url:'https://www.baeldung.com/jvm-garbage-collectors',label:'Baeldung: JVM GC'}
+]},
+
+'3.1':{phase:3,title:'Spring Core and DI',
+desc:'IoC container, dependency injection types, bean lifecycle, bean scopes, stereotypes, profiles, and type-safe configuration.',
+sections:[
+{h:'IoC and Constructor Injection',
+body:'Inversion of Control: the framework creates and wires objects for you. Constructor injection is the recommended approach.',
+code:`<span class="cm">// BAD: field injection — hidden deps, not testable without Spring</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">OrderService</span> {
+    <span class="an">@Autowired</span> <span class="kw">private</span> <span class="cl">PaymentService</span> paymentService; <span class="cm">// avoid</span>
+}
+
+<span class="cm">// GOOD: constructor injection — explicit, testable, final</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">OrderService</span> {
+    <span class="kw">private final</span> <span class="cl">PaymentService</span> paymentService;
+    <span class="kw">private final</span> <span class="cl">InventoryService</span> inventoryService;
+
+    <span class="kw">public</span> <span class="fn">OrderService</span>(<span class="cl">PaymentService</span> ps, <span class="cl">InventoryService</span> is) {
+        <span class="kw">this</span>.paymentService   = ps;
+        <span class="kw">this</span>.inventoryService = is;
+        <span class="cm">// with Lombok: @RequiredArgsConstructor does this</span>
+    }
+}
+
+<span class="cm">// @Configuration + @Bean: define beans explicitly</span>
+<span class="an">@Configuration</span>
+<span class="kw">public class</span> <span class="cl">AppConfig</span> {
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">RestTemplate</span> <span class="fn">restTemplate</span>() { <span class="kw">return new</span> <span class="cl">RestTemplate</span>(); }
+}`,
+type:'info',note:'Why constructor injection: deps are explicit, fields can be final, testable without Spring container, fails fast at startup.'},
+
+{h:'Bean Scopes and Lifecycle',
+body:'Singleton is the default — one instance per container. Know the lifecycle hooks for init and cleanup.',
+code:`<span class="cm">// Bean scopes</span>
+<span class="an">@Scope</span>(<span class="str">"singleton"</span>)  <span class="cm">// DEFAULT: one instance per container</span>
+<span class="an">@Scope</span>(<span class="str">"prototype"</span>)  <span class="cm">// new instance per injection/getBean()</span>
+<span class="an">@Scope</span>(<span class="str">"request"</span>)    <span class="cm">// new per HTTP request</span>
+<span class="an">@Scope</span>(<span class="str">"session"</span>)    <span class="cm">// new per HTTP session</span>
+
+<span class="cm">// Lifecycle hooks</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">DataLoader</span> {
+    <span class="an">@PostConstruct</span>
+    <span class="kw">public void</span> <span class="fn">init</span>() { <span class="cm">/* runs after DI is complete */</span> }
+    <span class="an">@PreDestroy</span>
+    <span class="kw">public void</span> <span class="fn">cleanup</span>() { <span class="cm">/* runs before bean is destroyed */</span> }
+}
+
+<span class="cm">// Stereotype annotations (all are @Component under the hood)</span>
+<span class="an">@Component</span>   <span class="cm">// generic bean</span>
+<span class="an">@Service</span>     <span class="cm">// business logic layer</span>
+<span class="an">@Repository</span>  <span class="cm">// data access — also translates DB exceptions</span>
+<span class="an">@Controller</span>  <span class="cm">// web layer</span>`,
+type:'warn',note:'Watch out for prototype beans injected into singletons — the singleton holds one prototype instance forever. Use ApplicationContext.getBean() for true per-call prototypes.'},
+
+{h:'Profiles and @ConfigurationProperties',
+body:'Profiles enable different beans per environment. @ConfigurationProperties provides type-safe property binding.',
+code:`<span class="cm">// Different DataSource per profile</span>
+<span class="an">@Profile</span>(<span class="str">"dev"</span>)  <span class="an">@Bean</span> <span class="kw">public</span> <span class="cl">DataSource</span> <span class="fn">devDs</span>()  { <span class="kw">return</span> h2(); }
+<span class="an">@Profile</span>(<span class="str">"prod"</span>) <span class="an">@Bean</span> <span class="kw">public</span> <span class="cl">DataSource</span> <span class="fn">prodDs</span>() { <span class="kw">return</span> postgres(); }
+
+<span class="cm">// Activate in application.yml:</span>
+<span class="cm">// spring.profiles.active: dev</span>
+
+<span class="cm">// @ConfigurationProperties: type-safe property binding</span>
+<span class="an">@ConfigurationProperties</span>(prefix = <span class="str">"app.payment"</span>)
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">PaymentProps</span> {
+    <span class="kw">private</span> <span class="cl">String</span> apiKey;
+    <span class="kw">private</span> <span class="cl">String</span> baseUrl;
+    <span class="kw">private int</span>    timeoutMs;
+    <span class="cm">// getters + setters</span>
+}
+<span class="cm">// application.yml:
+// app.payment.api-key: sk_live_xxx
+// app.payment.base-url: https://api.payment.com
+// app.payment.timeout-ms: 5000</span>`,
+type:'danger',note:'Never hardcode configuration. Always use @ConfigurationProperties or @Value. Hardcoded config in production code ends careers.'}
+],
+resources:[
+{url:'https://www.baeldung.com/spring-dependency-injection',label:'Baeldung: Spring DI'},
+{url:'https://www.baeldung.com/spring-bean-scopes',label:'Baeldung: Bean Scopes'},
+{url:'https://www.baeldung.com/configuration-properties-in-spring-boot',label:'Baeldung: @ConfigurationProperties'}
+]},
+
+'3.2':{phase:3,title:'REST API Production Grade',
+desc:'@RestController patterns, DTOs, validation, global exception handling with @ControllerAdvice, pagination.',
+sections:[
+{h:'Controller Layer — The Right Way',
+body:'Controllers should be thin. No business logic. Parse input, call service, return ResponseEntity.',
+code:`<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="str">"/api/v1/users"</span>)
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">UserController</span> {
+    <span class="kw">private final</span> <span class="cl">UserService</span> userService;
+
+    <span class="an">@GetMapping</span>(<span class="str">"/{id}"</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">UserDTO</span>&gt; <span class="fn">getUser</span>(<span class="an">@PathVariable</span> <span class="cl">Long</span> id) {
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.ok(userService.findById(id));
+    }
+
+    <span class="an">@PostMapping</span>
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">UserDTO</span>&gt; <span class="fn">create</span>(<span class="an">@Valid</span> <span class="an">@RequestBody</span> <span class="cl">CreateUserRequest</span> req) {
+        <span class="cl">UserDTO</span> created = userService.create(req);
+        <span class="cl">URI</span> loc = <span class="cl">ServletUriComponentsBuilder</span>.fromCurrentRequest()
+            .path(<span class="str">"/{id}"</span>).buildAndExpand(created.id()).toUri();
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.created(loc).body(created); <span class="cm">// 201 Created</span>
+    }
+
+    <span class="an">@GetMapping</span>
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">Page</span>&lt;<span class="cl">UserDTO</span>&gt;&gt; <span class="fn">list</span>(<span class="an">@PageableDefault</span>(size=<span class="num">20</span>) <span class="cl">Pageable</span> p) {
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.ok(userService.findAll(p));
+    }
+}`,
+type:'info',note:'Never expose JPA entities from controllers. Always use DTOs. Entity changes should not break your API contract.'},
+
+{h:'Validation and Global Exception Handling',
+body:'Use Bean Validation annotations for input. Handle all exceptions centrally with @ControllerAdvice — no try/catch in controllers.',
+code:`<span class="cm">// Request DTO with validation</span>
+<span class="kw">public record</span> <span class="cl">CreateUserRequest</span>(
+    <span class="an">@NotBlank</span>(message = <span class="str">"Name required"</span>) <span class="an">@Size</span>(min=<span class="num">2</span>, max=<span class="num">100</span>) <span class="cl">String</span> name,
+    <span class="an">@NotBlank</span> <span class="an">@Email</span>                                              <span class="cl">String</span> email,
+    <span class="an">@Min</span>(<span class="num">0</span>) <span class="an">@Max</span>(<span class="num">150</span>)                                              <span class="cl">Integer</span> age
+) {}
+
+<span class="cm">// Global exception handler</span>
+<span class="an">@RestControllerAdvice</span>
+<span class="kw">public class</span> <span class="cl">GlobalExceptionHandler</span> {
+
+    <span class="an">@ExceptionHandler</span>(<span class="cl">UserNotFoundException</span>.<span class="kw">class</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">ErrorResponse</span>&gt; <span class="fn">notFound</span>(<span class="cl">UserNotFoundException</span> e) {
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.status(<span class="num">404</span>).body(<span class="kw">new</span> <span class="cl">ErrorResponse</span>(e.getMessage()));
+    }
+
+    <span class="an">@ExceptionHandler</span>(<span class="cl">MethodArgumentNotValidException</span>.<span class="kw">class</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">Map</span>&gt; <span class="fn">validation</span>(<span class="cl">MethodArgumentNotValidException</span> e) {
+        <span class="cl">Map</span>&lt;<span class="cl">String</span>,<span class="cl">String</span>&gt; errors = e.getBindingResult().getFieldErrors().stream()
+            .collect(<span class="cl">Collectors</span>.toMap(<span class="cl">FieldError</span>::getField, <span class="cl">FieldError</span>::getDefaultMessage));
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.badRequest().body(errors);
+    }
+}`,
+type:'danger',note:'Never catch exceptions in controllers just to log and rethrow. Either handle meaningfully or let them bubble to @ControllerAdvice.'}
+],
+resources:[
+{url:'https://www.baeldung.com/spring-boot-bean-validation',label:'Baeldung: Bean Validation'},
+{url:'https://www.baeldung.com/exception-handling-for-rest-with-spring',label:'Baeldung: REST Exception Handling'},
+{url:'https://springdoc.org',label:'springdoc-openapi (Swagger UI)'}
+]},
+
+'3.3':{phase:3,title:'Spring Security and JWT',
+desc:'SecurityFilterChain configuration, JWT structure and signing, UserDetailsService, BCrypt, method-level security.',
+sections:[
+{h:'SecurityFilterChain — Spring Security 6',
+body:'Spring Security 6 uses SecurityFilterChain beans instead of extending WebSecurityConfigurerAdapter. Know this modern style.',
+code:`<span class="an">@Configuration</span> <span class="an">@EnableWebSecurity</span>
+<span class="kw">public class</span> <span class="cl">SecurityConfig</span> {
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">SecurityFilterChain</span> <span class="fn">filterChain</span>(<span class="cl">HttpSecurity</span> http) <span class="kw">throws</span> <span class="cl">Exception</span> {
+        http
+            .csrf(<span class="cl">AbstractHttpConfigurer</span>::disable)
+            .sessionManagement(sm -&gt; sm.sessionCreationPolicy(<span class="cl">STATELESS</span>))
+            .authorizeHttpRequests(auth -&gt; auth
+                .requestMatchers(<span class="str">"/api/auth/**"</span>).permitAll()
+                .requestMatchers(<span class="str">"/api/admin/**"</span>).hasRole(<span class="str">"ADMIN"</span>)
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(jwtAuthFilter, <span class="cl">UsernamePasswordAuthenticationFilter</span>.<span class="kw">class</span>);
+        <span class="kw">return</span> http.build();
+    }
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">PasswordEncoder</span> <span class="fn">passwordEncoder</span>() {
+        <span class="kw">return new</span> <span class="cl">BCryptPasswordEncoder</span>(<span class="num">12</span>);
+    }
+}`,
+type:'info',note:'Disable CSRF only for stateless REST APIs using JWT. If you serve HTML forms with sessions, keep CSRF enabled.'},
+
+{h:'JWT Structure, Signing, and Validation',
+body:'JWT = header.payload.signature, all base64url encoded. The payload is readable by anyone — never put secrets in it.',
+code:`<span class="cm">// JWT structure:</span>
+<span class="cm">// header:    {"alg":"HS256","typ":"JWT"}</span>
+<span class="cm">// payload:   {"sub":"alice@x.com","roles":["USER"],"exp":1706003600}</span>
+<span class="cm">// signature: HMACSHA256(base64(header) + "." + base64(payload), secret)</span>
+
+<span class="cm">// Generate JWT (jjwt library)</span>
+<span class="cl">String</span> token = <span class="cl">Jwts</span>.builder()
+    .setSubject(user.getEmail())
+    .claim(<span class="str">"roles"</span>, user.getRoles())
+    .setIssuedAt(<span class="kw">new</span> <span class="cl">Date</span>())
+    .setExpiration(<span class="kw">new</span> <span class="cl">Date</span>(<span class="cl">System</span>.currentTimeMillis() + <span class="num">3_600_000</span>)) <span class="cm">// 1 hour</span>
+    .signWith(<span class="cl">SignatureAlgorithm</span>.HS256, secretKey)
+    .compact();
+
+<span class="cm">// Validate JWT</span>
+<span class="kw">try</span> {
+    <span class="cl">Claims</span> claims = <span class="cl">Jwts</span>.parserBuilder()
+        .setSigningKey(secretKey).build()
+        .parseClaimsJws(token).getBody();
+    <span class="cl">String</span> email = claims.getSubject();
+} <span class="kw">catch</span> (<span class="cl">ExpiredJwtException</span> | <span class="cl">JwtException</span> e) {
+    <span class="cm">// invalid token: return 401</span>
+}`,
+type:'warn',note:'Never hardcode the JWT secret. Load from environment variable or secrets manager. Use at least 256-bit key for HS256.'}
+],
+resources:[
+{url:'https://www.baeldung.com/spring-security-oauth-jwt',label:'Baeldung: Spring Security JWT'},
+{url:'https://jwt.io',label:'jwt.io — debug and decode tokens'},
+{url:'https://www.baeldung.com/spring-security-method-security',label:'Baeldung: Method Security'}
+]},
+
+'3.4':{phase:3,title:'Spring Data JPA',
+desc:'Repository hierarchy, query methods, entity relationships, FetchType, the N+1 problem, @Transactional rules.',
+sections:[
+{h:'Repository Hierarchy and Query Methods',
+body:'Spring Data JPA generates queries automatically from method names. JpaRepository is the one to extend in most cases.',
+code:`<span class="cm">// Hierarchy: Repository -&gt; CrudRepository -&gt; PagingAndSortingRepository -&gt; JpaRepository</span>
+<span class="an">@Repository</span>
+<span class="kw">public interface</span> <span class="cl">UserRepository</span> <span class="kw">extends</span> <span class="cl">JpaRepository</span>&lt;<span class="cl">User</span>, <span class="cl">Long</span>&gt; {
+    <span class="cm">// Generated from method name:</span>
+    <span class="cl">Optional</span>&lt;<span class="cl">User</span>&gt; <span class="fn">findByEmail</span>(<span class="cl">String</span> email);
+    <span class="cl">List</span>&lt;<span class="cl">User</span>&gt;     <span class="fn">findByAgeGreaterThanOrderByNameAsc</span>(<span class="kw">int</span> age);
+    <span class="kw">boolean</span>        <span class="fn">existsByEmail</span>(<span class="cl">String</span> email);
+
+    <span class="cm">// Custom JPQL query</span>
+    <span class="an">@Query</span>(<span class="str">"SELECT u FROM User u WHERE u.email = :email AND u.active = true"</span>)
+    <span class="cl">Optional</span>&lt;<span class="cl">User</span>&gt; <span class="fn">findActiveByEmail</span>(<span class="an">@Param</span>(<span class="str">"email"</span>) <span class="cl">String</span> email);
+
+    <span class="cm">// Native SQL</span>
+    <span class="an">@Query</span>(value = <span class="str">"SELECT * FROM users WHERE created_at > NOW() - INTERVAL '7 days'"</span>, nativeQuery = <span class="kw">true</span>)
+    <span class="cl">List</span>&lt;<span class="cl">User</span>&gt; <span class="fn">findRecentUsers</span>();
+}`,
+type:'info',note:'JpaRepository gives save(), findById(), findAll(), delete(), and pagination out of the box. Add custom methods only when needed.'},
+
+{h:'FetchType and the N+1 Problem',
+body:'Always use LAZY loading. EAGER loading causes unexpected queries and N+1 issues. Fix N+1 with JOIN FETCH.',
+code:`<span class="an">@Entity</span>
+<span class="kw">public class</span> <span class="cl">Order</span> {
+    <span class="an">@ManyToOne</span>(fetch = <span class="cl">FetchType</span>.LAZY)       <span class="cm">// ALWAYS use LAZY</span>
+    <span class="kw">private</span> <span class="cl">User</span> user;
+
+    <span class="an">@OneToMany</span>(mappedBy = <span class="str">"order"</span>, fetch = <span class="cl">FetchType</span>.LAZY, cascade = <span class="cl">CascadeType</span>.ALL)
+    <span class="kw">private</span> <span class="cl">List</span>&lt;<span class="cl">OrderItem</span>&gt; items;
+}
+
+<span class="cm">// N+1 PROBLEM: 100 orders = 1 query + 100 queries for users = 101 total!</span>
+orderRepo.findAll().forEach(o -&gt; System.out.println(o.getUser().getName()));
+
+<span class="cm">// FIX: JOIN FETCH loads everything in ONE query</span>
+<span class="an">@Query</span>(<span class="str">"SELECT o FROM Order o JOIN FETCH o.user WHERE o.status = :status"</span>)
+<span class="cl">List</span>&lt;<span class="cl">Order</span>&gt; <span class="fn">findWithUser</span>(<span class="an">@Param</span>(<span class="str">"status"</span>) <span class="cl">Status</span> status);`,
+type:'danger',note:'N+1 is the number one Spring Data JPA performance killer. Always check your query count with Hibernate statistics when loading associations.'},
+
+{h:'@Transactional Rules',
+body:'@Transactional ensures all database ops in the method succeed or all roll back. The self-invocation trap catches everyone.',
+code:`<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">TransferService</span> {
+
+    <span class="an">@Transactional</span>  <span class="cm">// starts tx, commits on success, rolls back on RuntimeException</span>
+    <span class="kw">public void</span> <span class="fn">transfer</span>(<span class="kw">long</span> from, <span class="kw">long</span> to, <span class="kw">double</span> amt) {
+        debit(from, amt);
+        credit(to, amt);  <span class="cm">// if this throws, debit is also rolled back</span>
+    }
+
+    <span class="an">@Transactional</span>(readOnly = <span class="kw">true</span>)  <span class="cm">// skip dirty-check flush; helps performance</span>
+    <span class="kw">public</span> <span class="cl">List</span>&lt;<span class="cl">Account</span>&gt; <span class="fn">getAccounts</span>() { ... }
+
+    <span class="cm">// TRAP: self-invocation bypasses the Spring proxy — NO transaction started!</span>
+    <span class="kw">public void</span> <span class="fn">caller</span>() {
+        <span class="kw">this</span>.transfer(<span class="num">1</span>, <span class="num">2</span>, <span class="num">100</span>); <span class="cm">// bypasses proxy: @Transactional ignored</span>
+    }
+}`,
+type:'warn',note:'@Transactional only works on public methods called from OUTSIDE the bean via the Spring proxy. Calling a @Transactional method from the same class does nothing.'}
+],
+resources:[
+{url:'https://www.baeldung.com/spring-data-jpa-query',label:'Baeldung: Spring Data JPA Queries'},
+{url:'https://www.baeldung.com/spring-n-plus-1-problem',label:'Baeldung: N+1 Problem'},
+{url:'https://www.baeldung.com/transaction-configuration-with-jpa-and-spring',label:'Baeldung: @Transactional'}
+]},
+
+'3.5':{phase:3,title:'Spring Boot Production',
+desc:'Actuator, externalized config, async processing with @Async, caching with @Cacheable.',
+sections:[
+{h:'Actuator — Production Visibility',
+body:'Spring Boot Actuator exposes health, metrics, info endpoints. Essential for K8s liveness and readiness probes.',
+code:`<span class="cm">// pom.xml: spring-boot-starter-actuator</span>
+
+<span class="cm">// application.yml</span>
+<span class="cm">// management.endpoints.web.exposure.include: health,info,metrics</span>
+<span class="cm">// management.endpoint.health.show-details: when-authorized</span>
+
+<span class="cm">// Custom health indicator</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">PaymentApiHealth</span> <span class="kw">implements</span> <span class="cl">HealthIndicator</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">Health</span> <span class="fn">health</span>() {
+        <span class="kw">if</span> (paymentApiUp()) <span class="kw">return</span> <span class="cl">Health</span>.up().build();
+        <span class="kw">return</span> <span class="cl">Health</span>.down().withDetail(<span class="str">"reason"</span>, <span class="str">"timeout"</span>).build();
+    }
+}
+
+<span class="cm">// Kubernetes probes:</span>
+<span class="cm">// livenessProbe:  GET /actuator/health/liveness</span>
+<span class="cm">// readinessProbe: GET /actuator/health/readiness</span>`,
+type:'info',note:'Never expose /actuator/env or /actuator/heapdump publicly — they contain secrets and memory dumps. Secure actuator behind authentication.'},
+
+{h:'Async and Caching',
+body:'@Async runs methods in a separate thread pool. @Cacheable skips the method body if the result is already cached.',
+code:`<span class="an">@EnableAsync</span> <span class="an">@EnableCaching</span>
+<span class="an">@SpringBootApplication</span> <span class="kw">public class</span> <span class="cl">App</span> {}
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">NotificationService</span> {
+
+    <span class="an">@Async</span>  <span class="cm">// runs in separate thread — caller returns immediately</span>
+    <span class="kw">public</span> <span class="cl">CompletableFuture</span>&lt;<span class="cl">Void</span>&gt; <span class="fn">sendEmail</span>(<span class="cl">String</span> to) {
+        emailClient.send(to);
+        <span class="kw">return</span> <span class="cl">CompletableFuture</span>.completedFuture(<span class="kw">null</span>);
+    }
+
+    <span class="an">@Cacheable</span>(value = <span class="str">"userProfiles"</span>, key = <span class="str">"#userId"</span>)
+    <span class="kw">public</span> <span class="cl">UserProfile</span> <span class="fn">getProfile</span>(<span class="cl">Long</span> userId) {
+        <span class="kw">return</span> db.fetchProfile(userId); <span class="cm">// called only if not in cache</span>
+    }
+
+    <span class="an">@CacheEvict</span>(value = <span class="str">"userProfiles"</span>, key = <span class="str">"#userId"</span>)
+    <span class="kw">public void</span> <span class="fn">updateProfile</span>(<span class="cl">Long</span> userId, <span class="cl">ProfileUpdate</span> u) {
+        db.updateProfile(userId, u); <span class="cm">// removes stale cache entry</span>
+    }
+}`,
+type:'warn',note:'Configure a custom ThreadPoolTaskExecutor for @Async. The default single-thread executor is not suitable for production load.'}
+],
+resources:[
+{url:'https://www.baeldung.com/spring-boot-actuators',label:'Baeldung: Spring Boot Actuator'},
+{url:'https://www.baeldung.com/spring-async',label:'Baeldung: @Async'},
+{url:'https://www.baeldung.com/spring-cache-tutorial',label:'Baeldung: Spring Caching'}
+]}
+};
+
+const QUIZZES={
+'q1_1':{title:'P1 Data Types',qs:[
+{t:'MCQ',q:'What does this print?\n\nInteger a = 127;\nInteger b = 127;\nSystem.out.println(a == b);',opts:['true','false','NullPointerException','Compile error'],a:0,e:'JVM caches Integer values -128 to 127. Both a and b point to the same cached object so == returns true.'},
+{t:'PREDICT OUTPUT',q:'What is printed?',code:'int x = 10;\nint y = x;\ny = 20;\nSystem.out.println(x);',opts:['10','20','null','Compile error'],a:0,e:'Primitives are copied by value. Changing y does not affect x. x stays 10.'},
+{t:'MCQ',q:'Which declaration is valid for a long value greater than Integer.MAX_VALUE?',opts:['long x = 9999999999;','long x = 9999999999L;','long x = (long)9999999999;','Both B and C'],a:3,e:'Both B (L suffix) and C (explicit cast) work. Both B and C are valid so D is correct. Uppercase L is preferred because lowercase l looks like 1.'},
+{t:'PREDICT OUTPUT',q:'What is printed?',code:'String s1 = "hello";\nString s2 = "hello";\nString s3 = new String("hello");\nSystem.out.println(s1 == s2);\nSystem.out.println(s1 == s3);\nSystem.out.println(s1.equals(s3));',opts:['true / false / true','true / true / true','false / false / true','true / false / false'],a:0,e:'s1 and s2 share the same String Pool object (true). s3 is a new heap object (false). equals() compares content (true).'},
+{t:'MCQ',q:'What is the safest null-proof way to compare a String variable to a known literal?',opts:['input == "hello"','input.equals("hello")','Objects.equals(input, "hello")','Both B and C are wrong'],a:2,e:'Objects.equals() handles null on both sides without NPE. "hello".equals(input) also works. B throws NPE if input is null.'},
+{t:'PREDICT OUTPUT',q:'What does this print?',code:'Integer c = 128;\nInteger d = 128;\nSystem.out.println(c == d);\nSystem.out.println(c.equals(d));',opts:['true / true','false / true','false / false','true / false'],a:1,e:'128 is outside the Integer cache range. c and d are different heap objects so == is false. equals() compares value so it is true.'},
+{t:'MCQ',q:'Why should you never use double for monetary calculations?',opts:['double is slower','double cannot represent many decimal values exactly (0.1+0.2 = 0.30000000000000004)','double is deprecated','double does not support negatives'],a:1,e:'Floating point uses binary fractions. Many decimal values like 0.1 cannot be represented exactly, causing compounding rounding errors.'},
+{t:'PREDICT OUTPUT',q:'What happens here?',code:'Integer val = null;\ntry {\n    int x = val;\n} catch (NullPointerException e) {\n    System.out.println("NPE");\n}',opts:['Prints 0','NPE','Compile error','Prints null'],a:1,e:'Unboxing null calls val.intValue() on a null reference. NullPointerException is thrown at runtime.'}
+]},
+'q1_2':{title:'P1 OOP',qs:[
+{t:'MCQ',q:'What is wrong with: class Stack extends ArrayList?',opts:['Will not compile','Stack is not a list — use composition, not inheritance','ArrayList is final','Nothing wrong'],a:1,e:'ArrayList exposes get(i), add(index,e), subList() and 200+ methods that make no sense on a Stack. Stack is NOT-A ArrayList. Compose instead.'},
+{t:'PREDICT OUTPUT',q:'What is printed?',code:'class Animal { String speak() { return "..."; } }\nclass Dog extends Animal { @Override String speak() { return "Woof"; } }\nAnimal a = new Dog();\nSystem.out.println(a.speak());',opts:['...','Woof','Compile error','null'],a:1,e:'Runtime polymorphism: reference is Animal but actual object is Dog. JVM calls Dog.speak() at runtime.'},
+{t:'MCQ',q:'What is the equals/hashCode contract?',opts:['If hashCode equal then equals must be true','If equals is true then hashCode must be equal','Both must hold','Neither is required'],a:1,e:'Equal objects MUST have equal hashCodes. The reverse is not required — different objects can share a hashCode (collision).'},
+{t:'MCQ',q:'You override equals() but NOT hashCode(). What breaks?',opts:['Compilation fails','HashMap and HashSet may not find the object even when equals() returns true','equals() throws NPE','Nothing'],a:1,e:'HashMap uses hashCode() to find the bucket first. Different hashCode = wrong bucket = equals() never called = object never found.'},
+{t:'MCQ',q:'Why is constructor injection preferred over field injection in Spring?',opts:['Uses less memory','Dependencies are explicit, fields can be final, testable without Spring','Field injection was deprecated','Constructor injection is always faster'],a:1,e:'Field injection hides dependencies and requires the Spring container to test. Constructor injection: explicit deps, allows final, works in plain unit tests, fails fast.'},
+{t:'PREDICT OUTPUT',q:'What is printed?',code:'class Counter { static int count = 0; Counter() { count++; } }\nnew Counter();\nnew Counter();\nnew Counter();\nSystem.out.println(Counter.count);',opts:['0','1','3','Compile error'],a:2,e:'count is static — shared across all instances. Each constructor call increments the same variable. After 3 constructions, count = 3.'}
+]},
+'q1_3':{title:'P1 Collections',qs:[
+{t:'MCQ',q:'Time complexity of ArrayList.get(i) vs LinkedList.get(i)?',opts:['Both O(1)','ArrayList O(1) / LinkedList O(n)','Both O(n)','ArrayList O(n) / LinkedList O(1)'],a:1,e:'ArrayList uses an array — index access is O(1). LinkedList must traverse from head/tail — worst case O(n).'},
+{t:'MCQ',q:'When does HashMap rehash (resize)?',opts:['When size == capacity','When size > capacity x 0.75 (default load factor)','Every 16 insertions','Never automatically'],a:1,e:'Default load factor is 0.75. When the map is 75% full it doubles the bucket array and rehashes all entries.'},
+{t:'PREDICT OUTPUT',q:'What order are the keys printed?',code:'Map<String,Integer> m = new LinkedHashMap<>();\nm.put("banana", 2);\nm.put("apple", 1);\nm.put("cherry", 3);\nm.keySet().forEach(System.out::println);',opts:['apple/banana/cherry (sorted)','banana/apple/cherry (insertion order)','cherry/banana/apple','Random'],a:1,e:'LinkedHashMap preserves insertion order. Keys print in the order they were put: banana, apple, cherry.'},
+{t:'MCQ',q:'What is a fail-fast iterator?',opts:['Skips null elements','Throws ConcurrentModificationException if collection is structurally modified during iteration','Completes in O(1)','Retries automatically on error'],a:1,e:'ArrayList and HashMap iterators track modCount. If the collection is structurally modified while iterating they throw ConcurrentModificationException.'},
+{t:'MCQ',q:'Best approach for sorting Employee by salary in one method and by name in another?',opts:['Two different Comparable implementations','Implement Comparable for natural order (salary) and create a separate Comparator for name','Two Employee subclasses','Sort by salary first always'],a:1,e:'Comparable defines the natural/default ordering. Comparator provides additional orderings without changing the class.'},
+{t:'PREDICT OUTPUT',q:'What does this print?',code:'List<String> list = new ArrayList<>(Arrays.asList("c","a","b"));\nCollections.sort(list);\nSystem.out.println(list.get(0));',opts:['c','a','b','Exception'],a:1,e:'Collections.sort() sorts alphabetically in natural order. After sorting: [a,b,c]. get(0) returns "a".'}
+]},
+'q1_4':{title:'P1 Exceptions',qs:[
+{t:'MCQ',q:'Which is a checked exception?',opts:['NullPointerException','IllegalArgumentException','IOException','ArrayIndexOutOfBoundsException'],a:2,e:'IOException is checked — compiler forces catch or declare. The others extend RuntimeException (unchecked).'},
+{t:'PREDICT OUTPUT',q:'What does this print?',code:'try {\n    System.out.println("try");\n    return;\n} finally {\n    System.out.println("finally");\n}',opts:['"try" only','"finally" only','"try" then "finally"','Compile error'],a:2,e:'finally always executes — even with a return in try. Output: "try" then "finally".'},
+{t:'MCQ',q:'What does try-with-resources guarantee?',opts:['No exception thrown','close() called even if exception thrown','close() only called on success','Better performance'],a:1,e:'try-with-resources calls close() in all cases — normal completion, exception, or return.'},
+{t:'MCQ',q:'"User not found" — checked or unchecked exception?',opts:['Checked','Unchecked (RuntimeException) — modern Java preference, handle at the boundary','Either works','Return null instead'],a:1,e:'Modern Java favours unchecked exceptions. Domain errors like not-found are handled at the API boundary (404). Checked exceptions create noise through every method signature.'},
+{t:'PREDICT OUTPUT',q:'What is thrown here?',code:'Integer x = null;\ntry {\n    int y = x + 1;\n    System.out.println(y);\n} catch (NullPointerException e) {\n    System.out.println("NPE");\n}',opts:['Prints 1','NPE','ArithmeticException','Compile error'],a:1,e:'x + 1 triggers unboxing: x.intValue() on null reference = NullPointerException.'},
+{t:'MCQ',q:'What is wrong with returning from a finally block?',opts:['Compile error','Silently swallows any exception thrown in the try block','Prevents finally from executing','Only affects checked exceptions'],a:1,e:'If finally returns, the JVM discards any exception in flight. The exception is silently swallowed — one of the worst silent bugs in Java.'}
+]},
+'q2_1':{title:'P2 Java 8',qs:[
+{t:'MCQ',q:'What do Predicate, Function, Consumer, Supplier return respectively?',opts:['All return boolean','T->bool, T->R, T->void, ()->T','T->R, T->bool, ()->T, T->void','They are identical'],a:1,e:'Core four: Predicate tests (T->boolean), Function transforms (T->R), Consumer accepts with no return (T->void), Supplier produces with no input (()->T).'},
+{t:'PREDICT OUTPUT',q:'What does this produce?',code:'List.of("Alice","Bob","Anna","Charlie")\n    .stream()\n    .filter(s -> s.startsWith("A"))\n    .map(String::toLowerCase)\n    .sorted()\n    .collect(Collectors.toList())',opts:['["alice","anna"]','["Alice","Anna"]','["anna","alice"]','["anna"]'],a:0,e:'Filter: [Alice,Anna]. map(toLowerCase): [alice,anna]. sorted: [alice,anna] (already sorted alphabetically). Result: [alice,anna].'},
+{t:'MCQ',q:'Difference between Optional.orElse() and Optional.orElseGet()?',opts:['Identical','orElse always evaluates its argument; orElseGet evaluates the lambda only if Optional is empty','orElseGet always evaluates; orElse is lazy','orElse is for strings only'],a:1,e:'orElse("default") evaluates "default" every call even when Optional has a value. orElseGet(() -> compute()) only calls compute() when empty — use orElseGet for expensive ops.'},
+{t:'MCQ',q:'What is flatMap() used for in Streams?',opts:['Maps then filters','Flattens a Stream<Stream<T>> into a single Stream<T>','Same as map() but faster','Parallel mapping'],a:1,e:'flatMap() applies a function that returns a Stream and flattens all those streams into one. Useful for: List<List<Integer>> -> List<Integer>.'},
+{t:'PREDICT OUTPUT',q:'What does this print?',code:'Optional<String> opt = Optional.empty();\nString val = opt.orElse("default");\nSystem.out.println(val);',opts:['null','default','Optional.empty','NoSuchElementException'],a:1,e:'opt is empty so orElse returns "default". opt.get() would throw NoSuchElementException — never call get() without isPresent() check.'},
+{t:'MCQ',q:'Which class represents date only (no time, no timezone)?',opts:['Instant','ZonedDateTime','LocalDateTime','LocalDate'],a:3,e:'LocalDate is date only. LocalDateTime adds time. ZonedDateTime adds timezone. Instant is a machine timestamp (seconds since epoch).'}
+]},
+'q2_2':{title:'P2 Generics and Concurrency',qs:[
+{t:'MCQ',q:'What does PECS stand for?',opts:['Producer Extends Consumer Super — use extends when reading, super when writing','Producer Equals Consumer Substitute','Public Enum Class Subtype','Producer Exports Consumer Stores'],a:0,e:'PECS: use ? extends T when reading from the collection (it produces). Use ? super T when writing to it (it consumes).'},
+{t:'MCQ',q:'What is type erasure?',opts:['Compiler removes unused types','Generic type parameters are removed at runtime — List<String> and List<Integer> are both just List','A way to delete classes from memory','Removes deprecated types'],a:1,e:'Generic type information exists only at compile time. The JVM has no knowledge of generic parameters at runtime. That is why new T() and instanceof List<String> are compile errors.'},
+{t:'MCQ',q:'Difference between volatile and synchronized?',opts:['Identical','volatile: visibility of one variable; synchronized: mutual exclusion for a code block','volatile locks the variable','synchronized is always faster'],a:1,e:'volatile ensures changes to a single variable are visible immediately to all threads. synchronized ensures only one thread executes a block at a time, and also provides visibility.'},
+{t:'PREDICT OUTPUT',q:'Is this thread-safe?',code:'int counter = 0;\n// Thread 1 and Thread 2 both run:\ncounter++;',opts:['Yes — simple increment is atomic','No — read-modify-write is 3 ops and can race','Yes — JVM guarantees integer atomicity','Only on multi-core'],a:1,e:'counter++ is 3 bytecode ops: READ, ADD, WRITE. Two threads can both read the same value before either writes back. Use AtomicInteger or synchronized.'},
+{t:'MCQ',q:'What does CompletableFuture.allOf() do?',opts:['Returns the first completed future','Returns a future that completes when ALL given futures complete','Combines two futures into one','Cancels all futures'],a:1,e:'allOf() returns a new CompletableFuture that completes when all the given futures complete. Use join() on the result to block until all are done.'},
+{t:'MCQ',q:'What is ThreadLocal used for?',opts:['Sharing data between threads','Per-thread data storage — each thread gets its own isolated copy','Faster alternative to synchronized','Storing thread metadata in a file'],a:1,e:'ThreadLocal provides per-thread storage. Spring Security uses it to store the authenticated user — each HTTP request thread has its own SecurityContext.'}
+]},
+'q3_1':{title:'P3 Spring Core',qs:[
+{t:'MCQ',q:'Why is constructor injection preferred over field injection?',opts:['Less memory','Explicit deps, final fields, testable without Spring, fails fast at startup','Field injection was deprecated in Spring 6','Always faster'],a:1,e:'Field injection hides dependencies and requires Spring container in tests. Constructor injection: explicit, allows final, testable anywhere, startup failure if missing.'},
+{t:'MCQ',q:'What is the default bean scope in Spring?',opts:['prototype','request','session','singleton'],a:3,e:'Singleton is the default — one instance per Spring container, shared across all injections.'},
+{t:'PREDICT OUTPUT',q:'What is the output?',code:'@Component\nclass MyBean {\n    @PostConstruct void init() { System.out.println("post-construct"); }\n    MyBean() { System.out.println("constructor"); }\n}',opts:['post-construct / constructor','constructor / post-construct','Only constructor','Only post-construct'],a:1,e:'Spring: 1) instantiate (constructor), 2) inject deps, 3) @PostConstruct. Order: constructor then post-construct.'},
+{t:'MCQ',q:'Difference between @Component, @Service, and @Repository?',opts:['Completely different','@Service and @Repository are @Component specialisations; @Repository also translates DB exceptions','@Repository creates DB schema','@Service is for REST controllers only'],a:1,e:'All three are @Component. @Repository additionally translates persistence exceptions (SQLExceptions) into Spring DataAccessException.'},
+{t:'MCQ',q:'You call a @Transactional method from another method in the SAME class. What happens?',opts:['Transaction starts normally','NO transaction — self-invocation bypasses the Spring proxy','Compile error','Spring creates a second transaction'],a:1,e:'@Transactional works via Spring AOP proxies. this.method() calls the raw bean, bypassing the proxy. No transaction is started.'},
+{t:'MCQ',q:'What does @ConfigurationProperties do?',opts:['Marks a class as a config file','Binds a group of application.yml properties to a typed Java class','Configures Security properties','Enables property scanning'],a:1,e:'@ConfigurationProperties(prefix="app.payment") maps all app.payment.* properties to the annotated class fields — type-safe, IDE-friendly, validated on startup.'}
+]},
+'q3_2':{title:'P3 REST and Security',qs:[
+{t:'MCQ',q:'Why should you never expose JPA entities from REST controllers?',opts:['Entities cannot be serialized','Entity changes would break your API contract — DTOs provide a stable API layer','Spring Security blocks entity serialization','Entities are too large'],a:1,e:'If your entity changes (added column, renamed field) your API response changes too — breaking clients. DTOs decouple the API from the database schema.'},
+{t:'MCQ',q:'What HTTP status should a successful POST creating a resource return?',opts:['200 OK','201 Created with Location header','204 No Content','202 Accepted'],a:1,e:'201 Created is correct for resource creation. The response should include a Location header with the URI of the new resource.'},
+{t:'MCQ',q:'What is the N+1 problem in Spring Data JPA?',opts:['1 query for N items then N queries for each item association','A Spring bug with @OneToMany','Loading N+1 bytes per request','N+1 nested transactions'],a:0,e:'N+1: load 100 orders (1 query) then access order.getUser() for each (100 more queries) = 101 queries. Fix with JOIN FETCH or @EntityGraph.'},
+{t:'MCQ',q:'When is it safe to disable CSRF in Spring Security?',opts:['Never — always keep it','Safe for stateless REST APIs using JWT — CSRF requires session cookies','Must be disabled for all REST APIs','Only affects login pages'],a:1,e:'CSRF attacks exploit session cookies. Stateless JWT APIs do not use session cookies so they are not vulnerable. Safe to disable CSRF for token-based APIs.'},
+{t:'PREDICT OUTPUT',q:'What HTTP code does this return when UserNotFoundException is thrown?',code:'@ExceptionHandler(UserNotFoundException.class)\npublic ResponseEntity<ErrorResponse> handle(UserNotFoundException e) {\n    return ResponseEntity.status(404).body(new ErrorResponse(e.getMessage()));\n}',opts:['200','400','404','500'],a:2,e:'ResponseEntity.status(404) explicitly sets the HTTP status to 404 Not Found.'},
+{t:'MCQ',q:'What does @Transactional(readOnly = true) do?',opts:['Prevents any SQL from running','Hints to Hibernate to skip dirty-check flush — optimizes read performance','Locks the DB table in read mode','Disables all writes permanently'],a:1,e:'readOnly=true tells Hibernate to skip the dirty checking flush at transaction end. Improves performance for read-heavy operations. Does NOT prevent writes at the database level.'}
+]}
+};
+
+const PROJECTS={
+'p1':{title:'Bank Account System',phase:'Phase 1',diff:'beginner',
+desc:'Command-line bank system demonstrating OOP, encapsulation, collections, Comparable, custom exceptions, and try-with-resources.',
+steps:[
+{n:1,t:'<strong>Account class.</strong> Fields: accountNumber (final String), owner (final String), balance (private double). No setter for balance — only deposit(double) and withdraw(double) methods. Both validate input and throw custom exceptions.'},
+{n:2,t:'<strong>Custom exceptions.</strong> InsufficientFundsException extends Exception (checked) with a shortfall field. InvalidAmountException extends RuntimeException (unchecked). Verify they carry correct messages and causes.'},
+{n:3,t:'<strong>equals() and hashCode().</strong> Two accounts are equal if they have the same accountNumber. Override both — then prove: add two equal Account objects to a HashSet and verify only one is stored.'},
+{n:4,t:'<strong>Bank class.</strong> HashMap keyed by accountNumber. Methods: createAccount(), findAccount(id), transfer(from, to, amount). transfer() uses try-with-resources on a fake AutoCloseable TransactionLogger.'},
+{n:5,t:'<strong>Sorting.</strong> Make Account implement Comparable — natural order by accountNumber. Create a Comparator for balance descending. Sort a List both ways and print results.'},
+{n:6,t:'<strong>Transaction history.</strong> Each Account has a private List transactionLog. Add an entry per deposit/withdrawal. Expose it via Collections.unmodifiableList() — verify external code cannot mutate it.'},
+{n:7,t:'<strong>Main class.</strong> Create 5 accounts, deposit/withdraw, trigger InsufficientFundsException intentionally, transfer between accounts, print both sort orders.'}
+],
+resources:['https://docs.oracle.com/javase/tutorial/collections/','https://www.baeldung.com/java-custom-exception','https://www.baeldung.com/java-comparator-comparable']
+},
+'p2':{title:'Student Grade Tracker',phase:'Phase 1',diff:'beginner',
+desc:'Grade management system exercising LinkedHashMap, HashSet with equals/hashCode, Streams, and try-with-resources file output.',
+steps:[
+{n:1,t:'<strong>Student class.</strong> Fields: id (int), name (String), grades (Map). Implement equals/hashCode based on id only. Add getAverage() method.'},
+{n:2,t:'<strong>Use LinkedHashMap for grades.</strong> Preserve subject insertion order. Print grades and prove they appear in insertion order, not alphabetical.'},
+{n:3,t:'<strong>GradeBook with HashSet.</strong> First try adding two Students with same id without equals/hashCode override — show both are added. Fix it and prove the Set correctly deduplicates.'},
+{n:4,t:'<strong>Sorting.</strong> Make Student implement Comparable by name. Add a Comparator for average grade descending. Sort and print both ways.'},
+{n:5,t:'<strong>Stream queries.</strong> Find all students with average above 80. Get list of students who failed any subject (grade below 50). Count students per grade band (A/B/C/F) using groupingBy.'},
+{n:6,t:'<strong>File report with try-with-resources.</strong> Write a sorted report to report.txt listing each student, their average, and their grade band. Use try-with-resources for the writer.'}
+],
+resources:['https://www.baeldung.com/java-hashmap','https://www.baeldung.com/java-8-streams']
+},
+'p3':{title:'Async Task Queue',phase:'Phase 2',diff:'intermediate',
+desc:'Multi-threaded task queue using ExecutorService, CompletableFuture, Streams, AtomicInteger, and demonstrating thread safety.',
+steps:[
+{n:1,t:'<strong>Task record (Java 16+).</strong> record Task(int id, String name, Priority priority, Callable work) — Priority enum: LOW/MEDIUM/HIGH. Observe you get equals/hashCode/toString free.'},
+{n:2,t:'<strong>PriorityQueue with Comparator.</strong> Tasks ordered HIGH first. Add 10 tasks and poll them out — verify HIGH tasks come out before LOW regardless of insertion order.'},
+{n:3,t:'<strong>Stream operations.</strong> Given a List of tasks: filter only HIGH priority, group by priority with groupingBy, get the task with highest priority using max() with Comparator.'},
+{n:4,t:'<strong>TaskExecutor with ExecutorService.</strong> Fixed thread pool of 3. Submit each task, collect all Futures, call future.get() to gather results. Handle per-task failures without crashing the full run.'},
+{n:5,t:'<strong>CompletableFuture chain.</strong> executeThenLog(Task) runs the task async then thenAccept() logs the result. Chain exceptionally() to log failures. Use allOf() to wait for all tasks.'},
+{n:6,t:'<strong>Race condition demo.</strong> 10 threads each increment a shared int counter 1000 times without synchronisation — show final count is less than 10000. Fix with AtomicInteger and show correct result.'},
+{n:7,t:'<strong>Optional usage.</strong> findHighestPriorityPending() returns Optional. Demonstrate orElse, orElseGet, map, and ifPresent on the result.'}
+],
+resources:['https://www.baeldung.com/java-completablefuture','https://www.baeldung.com/java-executor-service-tutorial','https://www.baeldung.com/java-atomic-variables']
+},
+'p4':{title:'Library Management REST API',phase:'Phase 2 + 3',diff:'intermediate',
+desc:'Full Spring Boot REST API for a library. Covers all of Phase 3: DI, REST, security, JPA, validation, global exception handling.',
+steps:[
+{n:1,t:'<strong>Bootstrap.</strong> Spring Initializr: Web, Security, Data JPA, H2, Validation, Lombok, springdoc-openapi. Use constructor injection everywhere.'},
+{n:2,t:'<strong>Entities.</strong> Book (id, isbn, title, author, copiesAvailable), Member (id, email, name), Loan (id, book, member, loanDate, dueDate, returnDate). Use @CreatedDate and @LastModifiedDate with @EnableJpaAuditing.'},
+{n:3,t:'<strong>Repositories.</strong> JpaRepository for each. Custom queries: findByIsbn, findByEmail, findOverdueLoans (dueDate before today and returnDate is null). One method must use @Query with JPQL.'},
+{n:4,t:'<strong>Service layer with business rules.</strong> LoanService.borrowBook() checks copies available, creates Loan, decrements copies. returnBook() sets returnDate, increments copies. Both are @Transactional. Return DTOs only — never entities.'},
+{n:5,t:'<strong>Controllers.</strong> BookController, MemberController, LoanController. All endpoints return ResponseEntity. POST endpoints return 201 with Location header. @Valid on all @RequestBody. No try/catch in controllers.'},
+{n:6,t:'<strong>Global exception handler.</strong> @RestControllerAdvice handling: ResourceNotFoundException (404), MethodArgumentNotValidException (400 with field errors map), IllegalStateException (409 for business rule violations).'},
+{n:7,t:'<strong>Spring Security.</strong> Permit /api/auth/**, /swagger-ui/**, /v3/api-docs/**. Require auth for everything else. Add a single hardcoded in-memory user for testing.'},
+{n:8,t:'<strong>Tests.</strong> @WebMvcTest for one controller with MockMvc. @DataJpaTest for repository layer with H2. One @SpringBootTest to test borrow -> return flow end to end.'}
+],
+resources:['https://spring.io/guides/gs/rest-service/','https://www.baeldung.com/spring-boot-start','https://www.baeldung.com/spring-data-jpa-query']
+},
+'p5':{title:'JWT Auth Service',phase:'Phase 3',diff:'advanced',
+desc:'Standalone authentication microservice with Spring Security 6, JWT access/refresh tokens, BCrypt, and method-level security.',
+steps:[
+{n:1,t:'<strong>User entity and UserDetails.</strong> User entity with email, passwordHash, roles (Set). Implement UserDetails on User or create a UserDetailsService that wraps User. Roles stored as comma-separated string in DB.'},
+{n:2,t:'<strong>SecurityFilterChain.</strong> Stateless session. Permit /api/auth/**. JwtAuthFilter added before UsernamePasswordAuthenticationFilter. BCryptPasswordEncoder bean with strength 12.'},
+{n:3,t:'<strong>JwtService.</strong> generateToken(UserDetails): subject = email, roles claim, iat, exp (15 min). generateRefreshToken(): 7 day expiry. validateToken(token, userDetails). extractUsername(token). Use jjwt library.'},
+{n:4,t:'<strong>JwtAuthFilter.</strong> On each request: extract Bearer token from Authorization header, call jwtService.validateToken(), if valid create UsernamePasswordAuthenticationToken and set in SecurityContextHolder.'},
+{n:5,t:'<strong>Auth endpoints.</strong> POST /api/auth/register: validate, check email unique, hash password, save. POST /api/auth/login: authenticate, return access + refresh tokens. POST /api/auth/refresh: validate refresh token, return new access token.'},
+{n:6,t:'<strong>Method security.</strong> Enable @EnableMethodSecurity. Protect GET /api/admin/users with @PreAuthorize("hasRole(ADMIN)"). Verify USER role gets 403.'},
+{n:7,t:'<strong>Test with MockMvc.</strong> Test: register succeeds, login returns JWT, valid JWT accesses protected endpoint, missing JWT returns 401, ADMIN endpoint with USER role returns 403.'}
+],
+resources:['https://www.baeldung.com/spring-security-oauth-jwt','https://jwt.io','https://www.baeldung.com/spring-security-method-security']
+}
+};
+
+// ─── ROUTING ───────────────────────────────────────────────
+function route(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+  const pg=document.getElementById('page-'+page);
+  if(pg) pg.classList.add('active');
+  const lk=document.querySelector('.nav-link[href="#'+page+'"]');
+  if(lk) lk.classList.add('active');
+  if(page==='lessons'&&!document.querySelector('.phase-card')) buildPhasesGrid();
+  if(page==='quizzes'&&!document.querySelector('#quiz-sidebar .sb-item')) buildQuizSidebar();
+  if(page==='projects'&&!document.querySelector('#proj-sidebar .sb-item')) buildProjSidebar();
+  window.scrollTo(0,0);
+}
+function handleHash(){
+  const h=location.hash.replace('#','')||'lessons';
+  route(h);
+}
+
+// ─── LESSONS ───────────────────────────────────────────────
+function buildPhasesGrid(){
+  const g=document.getElementById('phases-grid');
+  g.innerHTML=PHASES.map(p=>`<div class="phase-card ${p.pc}" onclick="openPhase(${p.id})">
+    <div class="pnum">Phase ${p.id}</div>
+    <div class="ptitle">${p.title}</div>
+    <div class="pmeta"><span class="badge b${p.pc}">${p.p}</span><span class="pwks">${p.weeks}</span></div>
+    <div class="card-glow"></div>
+  </div>`).join('');
+}
+
+function openPhase(id){
+  const layout=document.getElementById('lesson-layout');
+  layout.style.display='grid';
+  setTimeout(()=>layout.scrollIntoView({behavior:'smooth'}),50);
+  const keys=Object.keys(L).filter(k=>L[k].phase===id);
+  const sb=document.getElementById('lesson-sidebar');
+  const ca=document.getElementById('lesson-content');
+  if(keys.length===0){
+    sb.innerHTML='<div class="sb-sec-title">Phase '+id+'</div>';
+    ca.innerHTML='<div class="l-phase-tag">Phase '+id+'</div>'
+      +'<div class="l-title">'+PHASES[id-1].title+'</div>'
+      +'<div class="l-desc">Detailed lessons for this phase coming soon.</div>'
+      +'<div class="callout info"><strong>Coming soon.</strong> Phases 1-3 are fully loaded. Phases 4-13 will be added progressively.</div>';
+    return;
+  }
+  sb.innerHTML='<div class="sb-sec-title">Phase '+id+' topics</div>'
+    +keys.map(k=>'<div class="sb-item" id="si-'+k+'" onclick="openLesson(\''+k+'\')"><span class="sb-dot"></span>'+L[k].title+'</div>').join('');
+  openLesson(keys[0]);
+}
+
+function openLesson(key){
+  const lesson=L[key];
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  const si=document.getElementById('si-'+key);
+  if(si) si.classList.add('active');
+  const svgIcon='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+  const body=lesson.sections.map(s=>
+    '<h4 class="sh">'+s.h+'</h4>'
+    +'<p class="body">'+s.body+'</p>'
+    +'<div class="code-block"><div class="code-top"><span class="code-lang">JAVA</span></div><pre>'+s.code+'</pre></div>'
+    +'<div class="callout '+s.type+'">'+s.note+'</div>'
+  ).join('');
+  const res=lesson.resources?'<h4 class="sh" style="margin-top:32px">Resources</h4><div class="res-grid">'
+    +lesson.resources.map(r=>'<a class="res-link" href="'+r.url+'" target="_blank">'+svgIcon+r.label+'<span>open</span></a>').join('')
+    +'</div>':'';
+  document.getElementById('lesson-content').innerHTML=
+    '<div class="l-phase-tag">Phase '+lesson.phase+' — '+key+'</div>'
+    +'<div class="l-title">'+lesson.title+'</div>'
+    +'<div class="l-desc">'+lesson.desc+'</div>'
+    +body+res;
+}
+
+// ─── QUIZZES ───────────────────────────────────────────────
+function buildQuizSidebar(){
+  const sb=document.getElementById('quiz-sidebar');
+  const groups={
+    'Phase 1 — Core Java':['q1_1','q1_2','q1_3','q1_4'],
+    'Phase 2 — Advanced Java':['q2_1','q2_2'],
+    'Phase 3 — Spring Boot':['q3_1','q3_2']
+  };
+  sb.innerHTML=Object.entries(groups).map(([g,ids])=>
+    '<div class="sb-sec-title">'+g+'</div>'
+    +ids.map(id=>'<div class="sb-item" id="qsi-'+id+'" onclick="loadQuiz(\''+id+'\')"><span class="sb-dot"></span>'+QUIZZES[id].title+'</div>').join('')
+  ).join('');
+}
+
+let cqid=null,cqi=0,ans=[],rev=[];
+function loadQuiz(id){
+  cqid=id; cqi=0;
+  ans=new Array(QUIZZES[id].qs.length).fill(null);
+  rev=new Array(QUIZZES[id].qs.length).fill(false);
+  document.querySelectorAll('#quiz-sidebar .sb-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById('qsi-'+id).classList.add('active');
+  renderQ();
+}
+
+function renderQ(){
+  const quiz=QUIZZES[cqid], q=quiz.qs[cqi], total=quiz.qs.length;
+  const dots=quiz.qs.map((_,i)=>'<div class="qdot '+(i===cqi?'active':ans[i]!==null?'done':'')+'"></div>').join('');
+  const code=q.code?'<div class="code-q">'+q.code.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'';
+  const letters=['A','B','C','D'];
+  const opts=q.opts.map((o,i)=>{
+    let cls='';
+    if(ans[cqi]!==null){ if(i===q.a) cls='ok'; else if(i===ans[cqi]) cls='no'; }
+    return '<div class="opt '+cls+'" onclick="pick('+i+')"><span class="opt-l">'+letters[i]+'</span>'+o+'</div>';
+  }).join('');
+  const showBtn=ans[cqi]!==null&&!rev[cqi]?'<button class="btn" onclick="showExp()" style="margin-top:10px">Show explanation</button>':'';
+  const exp='<div class="explain '+(rev[cqi]?'show':'')+'" id="exp-box"><strong>Explanation: </strong>'+q.e+'</div>';
+  const allDone=ans.filter(a=>a!==null).length===total;
+  const correct=quiz.qs.filter((_,i)=>ans[i]===quiz.qs[i].a).length;
+  const score=allDone?'<div class="score-wrap show" style="margin-top:20px">'
+    +'<div class="score-big">'+correct+'<span style="font-size:24px;color:var(--text3)">\/'+total+'</span></div>'
+    +'<div class="score-sub">correct answers<\/div>'
+    +'<div class="btn-row" style="justify-content:center;margin-top:14px"><button class="btn pri" onclick="loadQuiz(\''+cqid+'\')">Retake<\/button><\/div>'
+    +'<\/div>':'';
+  document.getElementById('quiz-content').innerHTML=
+    '<div class="q-container">'
+    +'<div style="font-size:12px;color:var(--text2);margin-bottom:10px">'+quiz.title+'</div>'
+    +'<div class="q-progress">'+dots+'<span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:8px">'+(cqi+1)+'/'+total+'</span></div>'
+    +'<div class="q-card"><div class="q-n">QUESTION '+(cqi+1)+'</div>'
+    +'<div class="q-type">'+q.t+'</div>'
+    +'<div class="q-text">'+q.q.replace(/\n/g,'<br>')+'</div>'
+    +code+'<div class="opts">'+opts+'</div>'+exp+showBtn+'</div>'
+    +'<div class="btn-row">'
+    +(cqi>0?'<button class="btn" onclick="prevQ()">Prev</button>':'')
+    +(cqi<total-1?'<button class="btn pri" onclick="nextQ()">Next</button>':'')
+    +'</div>'+score+'</div>';
+}
+
+function pick(i){ if(ans[cqi]!==null) return; ans[cqi]=i; renderQ(); }
+function showExp(){ rev[cqi]=true; renderQ(); }
+function nextQ(){ if(cqi<QUIZZES[cqid].qs.length-1){ cqi++; renderQ(); } }
+function prevQ(){ if(cqi>0){ cqi--; renderQ(); } }
+
+// ─── PROJECTS ───────────────────────────────────────────────
+function buildProjSidebar(){
+  const sb=document.getElementById('proj-sidebar');
+  const groups={'Phase 1':['p1','p2'],'Phase 2':['p3'],'Phase 2+3':['p4'],'Phase 3':['p5']};
+  sb.innerHTML=Object.entries(groups).map(([g,ids])=>
+    '<div class="sb-sec-title">'+g+'</div>'
+    +ids.map(id=>'<div class="sb-item" id="psi-'+id+'" onclick="loadProj(\''+id+'\')"><span class="sb-dot"></span>'+PROJECTS[id].title+'</div>').join('')
+  ).join('');
+}
+
+function loadProj(id){
+  const p=PROJECTS[id];
+  document.querySelectorAll('#proj-sidebar .sb-item').forEach(i=>i.classList.remove('active'));
+  const si=document.getElementById('psi-'+id); if(si) si.classList.add('active');
+  const diffC=p.diff==='beginner'?'bh':p.diff==='intermediate'?'bc':'bm';
+  const svgIcon='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+  const steps=p.steps.map(s=>'<div class="step"><div class="step-n">'+s.n+'</div><div class="step-t">'+s.t+'</div></div>').join('');
+  const res='<div style="display:flex;flex-direction:column;gap:6px;margin:10px 0">'
+    +p.resources.map(r=>'<a class="res-link" href="'+r+'" target="_blank" style="color:var(--blue)">'+svgIcon+r.replace('https://','').split('/').slice(0,3).join('/')+'<span>open</span></a>').join('')
+    +'</div>';
+  document.getElementById('proj-content').innerHTML=
+    '<div class="l-phase-tag">'+p.phase+'</div>'
+    +'<div class="l-title">'+p.title+'</div>'
+    +'<div style="margin:6px 0 12px"><span class="badge '+diffC+'">'+p.diff+'</span></div>'
+    +'<div class="l-desc">'+p.desc+'</div>'
+    +'<h4 class="sh">Build Steps</h4>'
+    +'<div class="step-list">'+steps+'</div>'
+    +'<h4 class="sh">Resources</h4>'+res
+    +'<div class="callout warn" style="margin-top:20px"><strong>The rule:</strong> Read each step. Close everything. Build from memory. Only look back when truly stuck — and then only for the specific thing you are stuck on.</div>';
+}
+
+// ─── INIT ───────────────────────────────────────────────────
+window.addEventListener('hashchange',handleHash);
+handleHash();
+</script>
+</body>
+</html>
